@@ -7,8 +7,8 @@ from funciones_auxiliares import importar_archivo_excel
 def main():
 
 
-    resultado1 = importar_archivo_csv(r"f:\Uni_IA\2ºaño\ES\Otros\housing.csv")
-    resultado2 = importar_archivo_excel(r"f:\Uni_IA\2ºaño\ES\Otros\housing.xlsx")
+    resultado1 = importar_archivo_csv(r"c:\Users\Usuario\Downloads\housing.csv")
+    resultado2 = importar_archivo_excel(r"c:\Users\Usuario\Downloads\housing.xlsx")
 
 
     print(f"archivo csv:\n {resultado1}")
