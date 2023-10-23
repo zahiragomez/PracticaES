@@ -15,24 +15,24 @@ class TestFuncionesAuxiliares(unittest.TestCase):
 
         # Crear un archivo temporal
         with tempfile.NamedTemporaryFile(mode='w', delete=False) as temp_file:
-            temp_filename = temp_file.name
+            archtemp = temp_file.name
             temp_file.write(contenido_original)
 
         try:
             # Prueba para importar un archivo CSV
-            resultado = importar_archivo_csv(temp_filename)
+            resultado = importar_archivo_csv(archtemp)
 
             # Verifica que el resultado no sea nulo
             self.assertIsNotNone(resultado)
 
             # Convierte el contenido original en un DataFrame directamente
-            df_original = pd.read_csv(temp_filename)
+            df_original = pd.read_csv(archtemp)
 
             # Compara los DataFrames
             self.assertTrue(df_original.equals(resultado))
         finally:
             # Borra el archivo temporal
             import os
-            os.remove(temp_filename)
+            os.remove(archtemp)
 if __name__ == "__main__":
     unittest.main()
