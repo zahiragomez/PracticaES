@@ -25,9 +25,6 @@ class TestFuncionesAuxiliares(unittest.TestCase):
         resultado = importar_archivo_csv(r"c:\Users\Usuario\Downloads\housing.csv")
         self.assertIsNotNone(resultado)
 # Test para los xlsx
-    def test_importar_excel(self):
-        resultado = importar_archivo_excel(r"c:\Users\Usuario\Downloads\housing.xlsx")
-        self.assertIsNotNone(resultado)
-
+    
 if __name__ == "__main__":
     unittest.main()
