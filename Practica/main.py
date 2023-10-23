@@ -1,6 +1,8 @@
 import pandas as pd
+import unittest
 from funciones_auxiliares import importar_archivo_csv
 from funciones_auxiliares import importar_archivo_excel
+from test import TestFuncionesAuxiliares
 
 
 
@@ -11,20 +13,18 @@ def main():
     print(f"archivo csv:\n {resultado1}")
     print(f"archivo excel:\n {resultado2}")
 
+def ejecutar_test():
+    loader = unittest.TestLoader()
+    suite = loader.loadTestsFromModule(TestFuncionesAuxiliares)
+    runner = unittest.TextTestRunner()
+    runner.run(suite)
+
 
 if __name__ == "__main__":
     main()
+    # Pruebas del test
+    ejecutar_test()
 
-# Pruebas del test
-import unittest
-from funciones_auxiliares import importar_archivo_csv, importar_archivo_excel
 
-class TestFuncionesAuxiliares(unittest.TestCase):
-# Test para los csv
-    def test_importar_csv(self):
-        resultado = importar_archivo_csv(r"c:\Users\Usuario\Downloads\housing.csv")
-        self.assertIsNotNone(resultado)
-# Test para los xlsx
     
-if __name__ == "__main__":
-    unittest.main()
+
