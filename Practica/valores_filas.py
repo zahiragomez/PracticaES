@@ -2,7 +2,7 @@ import pandas as pd
 
 def asociar_valores(ruta_csv): 
     # Lee el archivo CSV
-    df = pd.read_excel(ruta_csv)
+    df = pd.read_csv(ruta_csv)
 
     # Añade nombres a las filas
     df.index = [i for i in range(1, len(df) + 1)]
