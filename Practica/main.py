@@ -6,7 +6,7 @@ from test import TestFuncionesAuxiliares
 from valores_filas import asociar_valores_csv
 from valores_filas import asociar_valores_excel
 
-    # Rutas archivos:
+    # Rutas archivos: 
     # Samuel: f:\Uni_IA\2ºaño\ES\Otros\housing.xlsx
     # Zahira:
     # Ainhoa:
