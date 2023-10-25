@@ -1,6 +1,6 @@
 import pandas as pd
 
-def asociar_valores(ruta_csv): 
+def asociar_valores_csv(ruta_csv): 
     # Lee el archivo CSV
     df = pd.read_csv(ruta_csv)
 
@@ -15,11 +15,13 @@ def asociar_valores(ruta_csv):
         # Si es válido, selecciona la fila
         fila_seleccionada = df.iloc[nombre_fila_seleccionada - 1] # Restamos 1 porque iloc[] es de base 0
         # Imprime la fila seleccionada
-        print(fila_seleccionada)
+        #print(fila_seleccionada)
+        return fila_seleccionada
     else:
-        print('El nombre introducido no corresponde a ninguna fila.')
+        #print('El nombre introducido no corresponde a ninguna fila.')
+        return None
 
-def asociar_valores(ruta_excel): 
+def asociar_valores_excel(ruta_excel): 
     # Lee el archivo Excel
     df = pd.read_excel(ruta_excel)
 
@@ -34,6 +36,8 @@ def asociar_valores(ruta_excel):
         # Si es válido, selecciona la fila
         fila_seleccionada = df.iloc[nombre_fila_seleccionada - 1] # Restamos 1 porque iloc[] es de base 0
         # Imprime la fila seleccionada
-        print(fila_seleccionada)
+        #print(fila_seleccionada)
+        return fila_seleccionada
     else:
-        print('El nombre introducido no corresponde a ninguna fila.')
+        #print('El nombre introducido no corresponde a ninguna fila.')
+        return None
