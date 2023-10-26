@@ -9,7 +9,7 @@ from valores_filas import asociar_valores_excel
     # Rutas archivos: 
     # Samuel: f:\Uni_IA\2ºaño\ES\Otros\housing.xlsx
     # Zahira:
-    # Ainhoa:
+    # Ainhoa: C:\Users\lovea\Downloads\housing.xlsx
     # Lidia: 
 
 def main():
