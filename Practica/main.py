@@ -27,17 +27,17 @@ def main():
     print(f"archivo excel:\n {selFila2}")
 
 
-def ejecutar_test():
-    loader = unittest.TestLoader()
-    suite = loader.loadTestsFromModule(TestFuncionesAuxiliares)
-    runner = unittest.TextTestRunner()
-    runner.run(suite)
+# def ejecutar_test():
+#     loader = unittest.TestLoader()
+#     suite = loader.loadTestsFromModule(TestFuncionesAuxiliares)
+#     runner = unittest.TextTestRunner()
+#     runner.run(suite)
 
 
 if __name__ == "__main__":
     main()
     # Pruebas del test
-    ejecutar_test()
+    #ejecutar_test()
 
 
     
