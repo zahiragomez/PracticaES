@@ -1,43 +1,37 @@
 import pandas as pd
-import unittest
-from funciones_auxiliares import importar_archivo_csv
-from funciones_auxiliares import importar_archivo_excel
-from test import TestFuncionesAuxiliares
-from valores_filas import asociar_valores_csv
-from valores_filas import asociar_valores_excel
+from funciones_auxiliares import importar_archivo_csv, importar_archivo_excel, importar_archivo_db
+from funciones_auxiliares import asociar_valores_csv, asociar_valores_excel, asociar_valores_db
 
     # Rutas archivos: 
     # Samuel: f:\Uni_IA\2ºaño\ES\Otros\housing.xlsx
     # Zahira:
     # Ainhoa: C:\Users\lovea\Downloads\housing.xlsx
-    # Lidia: 
+    # Lidia: "/Users/lidiacaneiropardo/Downloads/housing.db"
 
 def main():
-    resultado1 = importar_archivo_csv(r"f:\Uni_IA\2ºaño\ES\Otros\housing.csv")
-    resultado2 = importar_archivo_excel(r"f:\Uni_IA\2ºaño\ES\Otros\housing.xlsx")
-
-    print(f"archivo csv:\n {resultado1}")
-    print(f"archivo excel:\n {resultado2}")
+    archivoCSV = importar_archivo_csv(r"f:\Uni_IA\2ºaño\ES\Otros\housing.csv")
+    archivoEXCEL = importar_archivo_excel(r"f:\Uni_IA\2ºaño\ES\Otros\housing.xlsx")
+    archivoSQL = importar_archivo_db(r"f:\Uni_IA\2ºaño\ES\Otros\housing.db")
 
 
-    selFila1 = asociar_valores_csv(r"f:\Uni_IA\2ºaño\ES\Otros\housing.csv")
-    selFila2 = asociar_valores_excel(r"f:\Uni_IA\2ºaño\ES\Otros\housing.xlsx")
-
-    print(f"archivo csv:\n {selFila1}")
-    print(f"archivo excel:\n {selFila2}")
+    print(f"archivo csv:\n {archivoCSV}")
+    print(f"archivo excel:\n {archivoEXCEL}")
+    print(f"archivo sql:\n {archivoSQL}")
 
 
-# def ejecutar_test():
-#     loader = unittest.TestLoader()
-#     suite = loader.loadTestsFromModule(TestFuncionesAuxiliares)
-#     runner = unittest.TextTestRunner()
-#     runner.run(suite)
+    selColumnaCSV = asociar_valores_csv(r"f:\Uni_IA\2ºaño\ES\Otros\housing.csv")
+    selColumnaEXCEL = asociar_valores_excel(r"f:\Uni_IA\2ºaño\ES\Otros\housing.xlsx")
+    selColumnaSQL = asociar_valores_db(r"f:\Uni_IA\2ºaño\ES\Otros\housing.db")
+
+    print(f"archivo csv:\n {selColumnaCSV}")
+    print(f"archivo excel:\n {selColumnaEXCEL}")
+    print(f"archivo sql:\n {selColumnaSQL}")
+
+
 
 
 if __name__ == "__main__":
     main()
-    # Pruebas del test
-    #ejecutar_test()
 
 
     
