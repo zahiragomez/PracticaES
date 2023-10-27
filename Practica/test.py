@@ -69,11 +69,7 @@ class TestFuncionesAuxiliares(unittest.TestCase):
             if os.path.exists(self.archtemp):
                 os.remove(self.archtemp)
 
-<<<<<<< HEAD
-def test_importar_db(self):
-=======
     def test_importar_db(self):
->>>>>>> db8fbe9391a324c899bc4fbd86b63b8770dd247f
         # Ruta al archivo de prueba
         archivo_prueba = "/Users/lidiacaneiropardo/Downloads/housing.db"
 
@@ -107,9 +103,5 @@ def test_importar_db(self):
                 os.remove(self.archtemp)
 
 
-<<<<<<< HEAD
-
-=======
->>>>>>> db8fbe9391a324c899bc4fbd86b63b8770dd247f
 if __name__ == "__main__":
     unittest.main()

@@ -29,11 +29,8 @@ def importar_archivo_db(ruta_db):
     
     return df
 
-<<<<<<< HEAD
 
 
-=======
->>>>>>> db8fbe9391a324c899bc4fbd86b63b8770dd247f
 def asociar_valores_csv(ruta_csv):
     # Lee el archivo CSV
     df = importar_archivo_csv(ruta_csv)
