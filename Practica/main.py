@@ -10,7 +10,7 @@ from valores_filas import asociar_valores_excel
     # Samuel: f:\Uni_IA\2ºaño\ES\Otros\housing.xlsx
     # Zahira:
     # Ainhoa: C:\Users\lovea\Downloads\housing.xlsx
-    # Lidia: 
+    # Lidia: "/Users/lidiacaneiropardo/Downloads/housing.db"
 
 def main():
     resultado1 = importar_archivo_csv(r"f:\Uni_IA\2ºaño\ES\Otros\housing.csv")

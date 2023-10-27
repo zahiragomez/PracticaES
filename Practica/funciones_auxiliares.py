@@ -1,4 +1,5 @@
 import pandas as pd
+import sqlite3
 
 def importar_archivo_csv(ruta_csv):
     # Lee el archivo CSV y devuelve un DataFrame
@@ -10,6 +11,22 @@ def importar_archivo_excel(ruta_excel):
     # Lee el archivo Excel y devuelve un DataFrame
     df = pd.read_excel(ruta_excel)
     print("El archivo excel se ha importado de forma correcta")
+    return df
+
+def importar_archivo_db(ruta_db):
+    # Crear una conexión a la base de datos
+    conn = sqlite3.connect(ruta_db)
+
+    #### Conocer el nombre de la tabla 
+    # Consulta para obtener los nombres de todas las tablas en la base de datos
+    #query = "SELECT name FROM sqlite_master WHERE type='table';"
+
+    # Ejecutar la consulta y obtener los resultados
+    #tablas = pd.read_sql_query(query, conn)
+
+    # Leer los datos de la base de datos
+    df = pd.read_sql_query("SELECT * FROM california_housing_dataset", conn)
+    
     return df
 
 def asociar_valores_csv(ruta_csv):
