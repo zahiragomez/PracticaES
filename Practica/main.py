@@ -2,6 +2,8 @@ import pandas as pd
 from funciones_auxiliares import importar_archivo_csv, importar_archivo_excel, importar_archivo_db
 from funciones_auxiliares import asociar_valores_csv, asociar_valores_excel, asociar_valores_db
 
+
+    #esto furrula?
     # Rutas archivos: 
     # Samuel: f:\Uni_IA\2ºaño\ES\Otros\housing.xlsx
     # Zahira:
