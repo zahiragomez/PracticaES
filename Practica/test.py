@@ -202,7 +202,7 @@ class TestFuncionesAuxiliares(unittest.TestCase):
         )
 
         #para que salga la ventana
-        #ventana_prueba.mainloop()
+        ventana_prueba.mainloop()
 
     def test_modelos(self):
         
