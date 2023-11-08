@@ -1,7 +1,7 @@
 import pandas as pd
 from funciones_auxiliares import importar_archivo_csv, importar_archivo_excel, importar_archivo_db
 from funciones_auxiliares import asociar_valores_csv, asociar_valores_excel, asociar_valores_db
-from modelo_regresion_lineal import modelo_csv, modelo_excel, modelo_sql
+from modelo_regresion_lineal import modelo_regresion
 
 
     #esto furrula?
@@ -31,13 +31,11 @@ def main():
     print(f"archivo sql:\n {selColumnaSQL}")
 
 
-    modeloCSV = modelo_csv(archivoCSV)
-    modeloEXCEL = modelo_excel(archivoEXCEL)
-    modeloSQL = modelo_sql(archivoSQL)
+    modeloCSV = modelo_regresion(archivoCSV)
+    
 
     print(f"R^2, MSE: {modeloCSV}")
-    print(f"R^2, MSE: {modeloEXCEL}")
-    print(f"R^2, MSE: {modeloSQL}")
+    
 
 
 

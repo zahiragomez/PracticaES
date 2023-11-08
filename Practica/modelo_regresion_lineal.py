@@ -3,15 +3,22 @@ import pandas as pd
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score, mean_squared_error
+from sklearn.impute import SimpleImputer
 
 
-def modelo_csv(archivoCSV):
-    if not isinstance(archivoCSV, pd.DataFrame):
-        raise ValueError("El argumento 'archivoCSV' debe ser un DataFrame de pandas.")
+def modelo_regresion(archivo):
+    if not isinstance(archivo, pd.DataFrame):
+        raise ValueError("El argumento 'archivo' debe ser un DataFrame de pandas.")
     
-    X = archivoCSV[['VariableIndependiente1', 'VariableIndependiente2']]
-    y = archivoCSV['VariableDependiente']
+    X = archivo[['longitude', 'latitude', 'housing_median_age', 'total_rooms', 'total_bedrooms', 'population', 'households', 'median_income', 'ocean_proximity']]
+    y = archivo['median_house_value']
+
+    X = pd.get_dummies(X, columns=['ocean_proximity'], drop_first=True)
     
+    # Imputar valores nulos
+    imputer = SimpleImputer(strategy='mean')
+    X = imputer.fit_transform(X)
+
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
 
     model = LinearRegression()
@@ -25,45 +32,3 @@ def modelo_csv(archivoCSV):
 
     return r2, mse
 
-
-
-def modelo_excel(archivoEXCEL):
-    if not isinstance(archivoEXCEL, pd.DataFrame):
-        raise ValueError("El argumento 'archivoExcel' debe ser un DataFrame de pandas.")
-    
-    X = archivoEXCEL[['VariableIndependiente1', 'VariableIndependiente2']]
-    y = archivoEXCEL['VariableDependiente']
-    
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
-
-    model = LinearRegression()
-
-    model.fit(X_train, y_train)
-
-    y_pred = model.predict(X_test)
-
-    r2 = r2_score(y_test, y_pred)
-    mse = mean_squared_error(y_test, y_pred)
-
-    return r2, mse
-
-
-def modelo_sql(archivoSQL):
-    if not isinstance(archivoSQL, pd.DataFrame):
-        raise ValueError("El argumento 'archivoSQL' debe ser un DataFrame de pandas.")
-    
-    X = archivoSQL[['VariableIndependiente1', 'VariableIndependiente2']]
-    y = archivoSQL['VariableDependiente']
-    
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
-
-    model = LinearRegression()
-
-    model.fit(X_train, y_train)
-
-    y_pred = model.predict(X_test)
-
-    r2 = r2_score(y_test, y_pred)
-    mse = mean_squared_error(y_test, y_pred)
-
-    return r2, mse
