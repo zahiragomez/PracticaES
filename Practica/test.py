@@ -43,7 +43,7 @@ class TestFuncionesAuxiliares(unittest.TestCase):
 
     def test_importar_csv(self):
         # Ruta al archivo de prueba
-        archivo_prueba = r"C:\Users\lovea\Downloads\housing.csv"  
+        archivo_prueba = r"f:\Uni_IA\2ºaño\ES\Otros\housing.csv"  
 
         # Leer el contenido del archivo original
         with open(archivo_prueba, 'r') as archivo_original:
@@ -73,7 +73,7 @@ class TestFuncionesAuxiliares(unittest.TestCase):
 
     def test_importar_excel(self): 
         # Ruta al archivo de prueba
-        archivo_prueba = r"C:\Users\lovea\Downloads\housing.xlsx" 
+        archivo_prueba = r"f:\Uni_IA\2ºaño\ES\Otros\housing.xlsx" 
 
         # Leer el contenido del archivo original
         with open(archivo_prueba, 'r') as archivo_original:
@@ -106,7 +106,7 @@ class TestFuncionesAuxiliares(unittest.TestCase):
 
     def test_importar_db(self):
         # Ruta al archivo de prueba
-        archivo_prueba = r"C:\Users\lovea\Downloads\housing.db"
+        archivo_prueba = r"f:\Uni_IA\2ºaño\ES\Otros\housing.db"
 
         # Leer el contenido del archivo original
         with open(archivo_prueba, 'r') as archivo_original:
