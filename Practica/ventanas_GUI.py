@@ -57,17 +57,16 @@ class PantallaPrincipal(tk.Frame):
 
 
     def move_to_crear_modelos(self):
+        selected_tipo_archivo = self.tipo_archivo.get()
 
-        self.controller.tipo_archivo = self.tipo_archivo.get()
-        if self.controller.tipo_archivo == ".csv":
+        if selected_tipo_archivo == "csv":
             csv = importar_archivo_csv()
-
-        elif self.controller.tipo_archivo == ".xlsx (excel)":
+        elif selected_tipo_archivo == "excel":
             excel = importar_archivo_excel()
-
         else:
-            db = importar_archivo_db()
-        self.controller.show_frame(MostrarModelos)
+         db = importar_archivo_db()
+
+        self.controller.show_frame(MostrarModelos))
 
     #Ahora crearemos los atributos que tiene la pantalla principal
 
