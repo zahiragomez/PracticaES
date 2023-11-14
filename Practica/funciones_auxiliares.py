@@ -34,6 +34,8 @@ def importar_archivo_db():
 
     # Leer los datos de la base de datos
     df = pd.read_sql_query("SELECT * FROM california_housing_dataset", conn)
+
+    conn.close()
     
     return df
 

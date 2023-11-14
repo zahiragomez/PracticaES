@@ -5,6 +5,7 @@ import os
 import tkinter as tk
 from tkinter import filedialog
 import sqlite3
+import shutil
 
 #PARA LA CREACIÓN DE MODELOS
 # Tratamiento de datos
@@ -74,16 +75,10 @@ class TestFuncionesAuxiliares(unittest.TestCase):
 
     def test_importar_excel(self): 
         # Ruta al archivo de prueba
-        archivo_prueba = r"C:\Users\lovea\Downloads\housing.db" 
+        archivo_prueba = r"C:\Users\lovea\Downloads\housing.xlsx" 
+        archtemp = r"C:\Users\lovea\Downloads\archivos/temporal.xlsx"
 
-        # Leer el contenido del archivo original
-        with open(archivo_prueba, 'r') as archivo_original:
-            contenido_original = archivo_original.read()
-
-        # Crear un archivo temporal
-        with tempfile.NamedTemporaryFile(mode='w', delete=False) as temp_file:
-            archtemp = temp_file.name
-            temp_file.write(contenido_original)
+        shutil.copy(archivo_prueba, archtemp)
 
         try:
             # Prueba para importar un archivo Excel
@@ -93,7 +88,7 @@ class TestFuncionesAuxiliares(unittest.TestCase):
             self.assertIsNotNone(resultado)
 
             # Convierte el contenido original en un DataFrame directamente
-            df_original = pd.read_csv(archtemp)
+            df_original = pd.read_excel(archtemp)
 
             # Compara los DataFrames
             self.assertTrue(df_original.equals(resultado))
@@ -102,21 +97,16 @@ class TestFuncionesAuxiliares(unittest.TestCase):
 
         finally: 
             # Borra el archivo temporal
-            if os.path.exists(self.archtemp):
-                os.remove(self.archtemp)
+            if os.path.exists(archtemp):
+                os.remove(archtemp)
+
 
     def test_importar_db(self):
         # Ruta al archivo de prueba
         archivo_prueba = r"C:\Users\lovea\Downloads\housing.db"
-
-        # Leer el contenido del archivo original
-        with open(archivo_prueba, 'r') as archivo_original:
-            contenido_original = archivo_original.read()
-
-        # Crear un archivo temporal
-        with tempfile.NamedTemporaryFile(mode='w', delete=False) as temp_file:
-            archtemp = temp_file.name
-            temp_file.write(contenido_original)
+        archtemp = r"C:\Users\lovea\Downloads\archivos/temporal.db"
+        
+        shutil.copy(archivo_prueba, archtemp)
 
         try:
             # Prueba para importar un archivo CSV
@@ -126,7 +116,9 @@ class TestFuncionesAuxiliares(unittest.TestCase):
             self.assertIsNotNone(resultado)
 
             # Convierte el contenido original en un DataFrame directamente
-            df_original = pd.read_csv(archtemp)
+            conn = sqlite3.connect(archtemp)
+            df_original = pd.read_sql_query("SELECT * FROM california_housing_dataset", conn)
+            conn.close()
 
             # Compara los DataFrames
             self.assertTrue(df_original.equals(resultado))
@@ -135,8 +127,33 @@ class TestFuncionesAuxiliares(unittest.TestCase):
 
         finally: 
             # Borra el archivo temporal
-            if os.path.exists(self.archtemp):
-                os.remove(self.archtemp)
+            if os.path.exists(archtemp):
+                os.remove(archtemp)
+
+    def test_seleccionar_columna_csv(self):
+        df = importar_archivo_csv('archivos/housing.csv')
+
+        columna = df.iloc[:, 0] # 0 porque es la primera columna
+        self.assertEqual(len(columna), 20640)
+        self.assertEqual(columna.min(), -124.35)
+        self.assertEqual(columna.max(), -114.31)
+
+    def test_seleccionar_columna_xlsx(self):
+        df = importar_archivo_excel('archivos/housing.xlsx')
+
+        columna = df.iloc[:, 0]
+        self.assertEqual(len(columna), 20640)
+        self.assertEqual(columna.min(), -124.35)
+        self.assertEqual(columna.max(), -114.31)
+
+    def test_seleccionar_columna_db(self):
+        df = importar_archivo_db('archivos/housing.db')
+
+        columna = df.iloc[:, 0]
+        self.assertEqual(len(columna), 20640)
+        self.assertEqual(columna.min(), -124.35)
+        self.assertEqual(columna.max(), -114.31)
+
 
     def test_interfaz(self):
         #crea el objeto ventana
