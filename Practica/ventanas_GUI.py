@@ -66,7 +66,7 @@ class PantallaPrincipal(tk.Frame):
         else:
          db = importar_archivo_db()
 
-        self.controller.show_frame(MostrarModelos))
+        self.controller.show_frame(MostrarModelos)
 
     #Ahora crearemos los atributos que tiene la pantalla principal
 

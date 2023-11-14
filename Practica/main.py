@@ -7,7 +7,7 @@ from modelo_regresion_lineal import modelo_regresion
     #esto furrula?
     # Rutas archivos: 
     # Samuel: f:\Uni_IA\2ºaño\ES\Otros\housing.xlsx
-    # Zahira:
+    # Zahira: c:\Users\Usuario\Downloads
     # Ainhoa: "C:\Users\lovea\Downloads\housing.db"
     # Lidia: "/Users/lidiacaneiropardo/Downloads/housing.db"
 
@@ -22,9 +22,9 @@ def main():
     print(f"archivo sql:\n {archivoSQL}")
 
 
-    selColumnaCSV = asociar_valores_csv(r"f:\Uni_IA\2ºaño\ES\Otros\housing.csv")
-    selColumnaEXCEL = asociar_valores_excel(r"f:\Uni_IA\2ºaño\ES\Otros\housing.xlsx")
-    selColumnaSQL = asociar_valores_db(r"f:\Uni_IA\2ºaño\ES\Otros\housing.db")
+    selColumnaCSV = asociar_valores_csv(r"c:\Users\Usuario\Downloads\housing.csv")
+    selColumnaEXCEL = asociar_valores_excel(r"c:\Users\Usuario\Downloads\housing.xlsx")
+    selColumnaSQL = asociar_valores_db(r"c:\Users\Usuario\Downloads\housing.db")
 
     print(f"archivo csv:\n {selColumnaCSV}")
     print(f"archivo excel:\n {selColumnaEXCEL}")
