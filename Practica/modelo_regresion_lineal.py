@@ -22,14 +22,21 @@ def test_modelos():
 
     # Verificar que las columnas ingresadas por el usuario son numéricas
     numeric_columns = data.select_dtypes(include='number').columns.tolist()
-    
+
     for col in x_columns + [y_column]:
         if col not in numeric_columns:
             print(f"La columna {col} no es numérica. Por favor, elige columnas numéricas.")
-            return  # Salir de la función si se encuentra una columna no numérica
+            exit  # Salir de la función si se encuentra una columna no numérica
+
+    # Crear el DataFrame para el gráfico de dispersión
+    datos = data[x_columns + [y_column]]  # Cambiado a x_columns[0]
 
    # Gráfico
+    #fig, ax = plt.subplots(figsize=(10, 6))
+
+    # Gráfico
     fig, ax = plt.subplots(figsize=(10, 6))
+
 
     # Correlación lineal entre las dos variables
     corr_test = pearsonr(x=data[x_columns[0]], y=data[y_column])
