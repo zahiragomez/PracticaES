@@ -40,7 +40,7 @@ def test_modelos():
         label='Datos de dispersión',  # Etiqueta para la leyenda
         marker='o'  # Utiliza círculos como estilo de los puntos
     )
-    ax.set_title('Distribución de X e Y')
+    ax.set_title(f'Distribución de {", ".join(x_columns)} y {y_column}')
     ax.set_xlabel('Eje X')
     ax.set_ylabel('Eje Y')
     # Añadir leyenda manualmente
@@ -55,7 +55,7 @@ def test_modelos():
     for x_column in x_columns:
         ax.scatter(data[x_column], data[y_column], label=x_column)
 
-    ax.set_title(f'Distribución de {", ".join(x_columns)} y {y_column}')
+    ax.set_title(f'Distribución de prueba')
     ax.legend()
     plt.show()
 
@@ -87,13 +87,27 @@ def test_modelos():
     predicciones['y'] = y_train
     predicciones = predicciones.sort_values('x')
 
-    # Gráfico del modelo
-    fig, ax = plt.subplots(figsize=(6, 3.84))
-    for column in X_train.columns[1:]:
-        ax.scatter(X_train[column], y_train, label=column)
+    # Gráfico de modelos 
+    fig, ax = plt.subplots(figsize=(10, 6))
+    # Puntos de dispersión
+    ax.scatter(predicciones['x'], predicciones['y'], marker='o', color='gray', label='Datos Observados', alpha=0.8)
+    # Línea de regresión
+    ax.plot(predicciones['x'], predicciones["mean"], linestyle='-', color='blue', label="OLS", linewidth=2)
+    # Intervalo de confianza del 95%
+    ax.fill_between(predicciones['x'], predicciones["mean_ci_lower"], predicciones["mean_ci_upper"], color='orange', alpha=0.1, label='95% CI')
+    
 
-    ax.set_title('Distribución de las columnas de X y Y')
+    # Etiquetas y título
+    ax.set_xlabel('Variable Independiente')
+    ax.set_ylabel('Variable Dependiente')
+    ax.set_title('Gráfico del Modelo con Predicciones')
+    # Cuadrícula y fondo
+    ax.grid(True, linestyle='--', alpha=0.5)
+    ax.set_facecolor('#F9F9F9')  # Color de fondo
+    # Leyenda
     ax.legend()
+
+    # Mostrar el gráfico
     plt.show()
 
     # Error de test del modelo
