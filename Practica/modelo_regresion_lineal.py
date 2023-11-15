@@ -31,12 +31,21 @@ def test_modelos():
     # Crear el DataFrame para el gráfico de dispersión
     datos = data[x_columns + [y_column]]  # Cambiado a x_columns[0]
 
-   # Gráfico
-    #fig, ax = plt.subplots(figsize=(10, 6))
-
     # Gráfico
     fig, ax = plt.subplots(figsize=(10, 6))
-
+    scatter = ax.scatter(
+        x=data[x_columns[0]],
+        y=data[y_column],
+        c='#FFA500',  # Código hexadecimal para naranja
+        label='Datos de dispersión',  # Etiqueta para la leyenda
+        marker='o'  # Utiliza círculos como estilo de los puntos
+    )
+    ax.set_title('Distribución de X e Y')
+    ax.set_xlabel('Eje X')
+    ax.set_ylabel('Eje Y')
+    # Añadir leyenda manualmente
+    ax.legend(handles=[scatter], loc='upper right')
+    plt.show()
 
     # Correlación lineal entre las dos variables
     corr_test = pearsonr(x=data[x_columns[0]], y=data[y_column])
