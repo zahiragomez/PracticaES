@@ -4,6 +4,9 @@ from scipy.stats import pearsonr
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
 import statsmodels.api as sm
+#Para persistir datos
+import pickle
+import  matplotlib.pyplot as plt
 
 def test_modelos():
     # Read the CSV file into a DataFrame
@@ -87,6 +90,12 @@ def test_modelos():
     )
     print("")
     print(f"El error (rmse) de test es: {rmse}")
+
+    #Guarda los datos en un archivo csv
+    data.to_csv("datos.csv",index=False)
+    #Guarda el modelo en un archivo binario usando pickle
+    with open("modelo.pkl", "wb") as f:
+        pickle.dump(modelo, f)
 
 if __name__ == "__main__":
     test_modelos()
