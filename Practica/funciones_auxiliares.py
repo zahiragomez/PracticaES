@@ -2,40 +2,27 @@ import pandas as pd
 import sqlite3
 from tkinter import filedialog
 
-def importar_archivo_csv():
-    #Comando para que la GUI busque el archivo
-    ruta_csv = filedialog.askopenfilename()
-    df = pd.read_csv(ruta_csv)
-    print("El archivo csv se ha importado de forma correcta")
-    return df
-
-def importar_archivo_excel():
-    #Comando para que la GUI busque el archivo
-    ruta_excel = filedialog.askopenfilename()
-    df = pd.read_excel(ruta_excel)
-    print("El archivo excel se ha importado de forma correcta")
-    return df
-
-def importar_archivo_db():
-
-    #Comando para que la GUI busque el archivo
-    ruta_db = filedialog.askopenfilename() 
+def importar_archivo(ruta_archivo):
+    # Comando para que la GUI busque el archivo
+     
     
-    # Crear una conexión a la base de datos
-    conn = sqlite3.connect(ruta_db)
-
+    # Obtener la extensión del archivo
+    extension = ruta_archivo.split(".")[-1].lower()
     
-    #### Conocer el nombre de la tabla 
-    # Consulta para obtener los nombres de todas las tablas en la base de datos
-    #query = "SELECT name FROM sqlite_master WHERE type='table';"
-
-    # Ejecutar la consulta y obtener los resultados
-    #tablas = pd.read_sql_query(query, conn)
-
-    # Leer los datos de la base de datos
-    df = pd.read_sql_query("SELECT * FROM california_housing_dataset", conn)
-
-    conn.close()
+    if extension == "csv":
+        df = pd.read_csv(ruta_archivo)
+        print("El archivo CSV se ha importado correctamente.")
+    elif extension == "xlsx" or extension == "xls":
+        df = pd.read_excel(ruta_archivo)
+        print("El archivo Excel se ha importado correctamente.")
+    elif extension == "db":
+        conn = sqlite3.connect(ruta_archivo)
+        df = pd.read_sql_query("SELECT * FROM california_housing_dataset", conn)
+        conn.close()
+        print("La base de datos se ha importado correctamente.")
+    else:
+        print("Extensión de archivo no compatible.")
+        return None
     
     return df
 
@@ -43,7 +30,7 @@ def importar_archivo_db():
 
 def asociar_valores_csv(ruta_csv):
     # Lee el archivo CSV
-    df = importar_archivo_csv(ruta_csv)
+    df = importar_archivo(ruta_csv)
 
     # Añade nombres a las columnas
     df['column'] = [i for i in range(1, len(df) + 1)]
@@ -63,7 +50,7 @@ def asociar_valores_csv(ruta_csv):
 
 def asociar_valores_excel(ruta_excel):
     # Lee el archivo Excel
-    df = importar_archivo_excel(ruta_excel)
+    df = importar_archivo(ruta_excel)
 
     # Añade nombres a las columnas
     df['column'] = [i for i in range(1, len(df) + 1)]
@@ -83,7 +70,7 @@ def asociar_valores_excel(ruta_excel):
 
 def asociar_valores_db(ruta_db):
     # Lee el archivo SQL
-    df = importar_archivo_db(ruta_db)
+    df = importar_archivo(ruta_db)
 
     # Añade nombres a las columnas
     df['column'] = [i for i in range(1, len(df) + 1)]
