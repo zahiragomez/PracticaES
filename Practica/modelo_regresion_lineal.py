@@ -10,7 +10,7 @@ import  matplotlib.pyplot as plt
 
 def test_modelos():
     # Read the CSV file into a DataFrame
-    data = pd.read_csv(r"c:\Users\Usuario\Downloads\housing.csv")
+    data = pd.read_csv(r"f:\Uni_IA\2ºaño\ES\Otros\housing.csv")
 
     # Display the first few rows of the DataFrame
     print("CSV Data:")

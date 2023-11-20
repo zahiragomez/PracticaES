@@ -2,6 +2,8 @@
 from funciones_auxiliares import *
 import tkinter as tk
 from funciones_auxiliares import *
+from tkinter import ttk
+from tkinter import filedialog
 
 
 
@@ -73,9 +75,48 @@ class PantallaPrincipal(tk.Frame):
             self.ruta_seleccionada.set(f"Ruta del archivo seleccionado: {ruta_archivo}")
            
     def seleccionar_columnas(self):
+        print("Seleccionar Columnas")
 
-            print("2")
-            #integrar el codigo del main
+        # Solicitar al usuario que seleccione un archivo
+        archivo_seleccionado = filedialog.askopenfilename()
+
+        # Verificar si se seleccionó un archivo
+        if not archivo_seleccionado:
+            print("No se seleccionó ningún archivo.")
+            return
+
+        # Obtener la extensión del archivo
+        extension = archivo_seleccionado.split(".")[-1].lower()
+
+        # Utilizar la función correspondiente según la extensión del archivo
+        if extension == "csv":
+            # Importar el archivo CSV
+            df = importar_archivo(archivo_seleccionado)
+
+            # Crear una nueva ventana para mostrar las variables en un Listbox
+            ventana_variables = tk.Toplevel(self)
+            ventana_variables.title("Seleccionar Variables")
+
+            # Crear un Listbox con scroll Y
+            listbox_variables = tk.Listbox(ventana_variables, selectmode=tk.MULTIPLE, exportselection=0)
+            scrollbar_y = tk.Scrollbar(ventana_variables, orient=tk.VERTICAL, command=listbox_variables.yview)
+            listbox_variables.config(yscrollcommand=scrollbar_y.set)
+
+            # Insertar las variables en el Listbox
+            for variable in df.columns:
+                listbox_variables.insert(tk.END, variable)
+
+            listbox_variables.pack(side=tk.LEFT, fill=tk.BOTH, padx=10, pady=10)
+            scrollbar_y.pack(side=tk.RIGHT, fill=tk.Y)
+
+            # Función para manejar la selección en el Listbox
+            def on_variable_selected(event):
+                selected_variables = listbox_variables.curselection()
+                selected_columns = [listbox_variables.get(idx) for idx in selected_variables]
+                self.columna_seleccionada.set(f"Columnas seleccionadas: {', '.join(selected_columns)}")
+
+            # Asociar la función al evento <<ListboxSelect>>
+            listbox_variables.bind("<<ListboxSelect>>", on_variable_selected)
         
 
     #Ahora crearemos los atributos que tiene la pantalla principal
@@ -125,6 +166,29 @@ class PantallaPrincipal(tk.Frame):
             fg="light blue"
         )
         columna_label.pack(side=tk.TOP, fill=tk.BOTH, padx=30, pady=30)
+
+
+         # Botón para seleccionar el archivo y mostrar variables disponibles
+        seleccionar_archivo_button = tk.Button(
+            self,
+            text="Seleccionar Archivo y Mostrar Variables",
+            command=self.seleccionar_columnas,
+            justify=tk.CENTER,
+            font=("Comfortaa", 14),
+            bg="white",
+            fg="light blue"
+        )
+        seleccionar_archivo_button.pack(side=tk.TOP, padx=160, pady=10)
+
+        # Etiqueta para mostrar la columna seleccionada
+        columna_label = tk.Label(
+            self,
+            textvariable=self.columna_seleccionada,
+            font=("Comfortaa", 14),
+            bg="white",
+            fg="light blue"
+        )
+        columna_label.pack(side=tk.TOP, fill=tk.BOTH, padx=30, pady=10)
         
         
 
