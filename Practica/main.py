@@ -1,6 +1,6 @@
 import pandas as pd
-from funciones_auxiliares import importar_archivo_csv, importar_archivo_excel, importar_archivo_db
-from funciones_auxiliares import asociar_valores_csv, asociar_valores_excel, asociar_valores_db
+from funciones_auxiliares import importar_archivo
+from funciones_auxiliares import asociar_valores
 from modelo_regresion_lineal import test_modelos
 
 
@@ -12,33 +12,18 @@ from modelo_regresion_lineal import test_modelos
     # Lidia: "/Users/lidiacaneiropardo/Downloads/housing.db"
 
 def main():
-    archivoCSV = importar_archivo_csv(r"f:\Uni_IA\2ºaño\ES\Otros\housing.csv")
-    archivoEXCEL = importar_archivo_excel(r"f:\Uni_IA\2ºaño\ES\Otros\housing.xlsx")
-    archivoSQL = importar_archivo_db(r"f:\Uni_IA\2ºaño\ES\Otros\housing.db")
+    archivo = importar_archivo("/Users/lidiacaneiropardo/Desktop/archivos/housing.xlsx")
 
+    print(f"archivo csv:\n {archivo}")
 
-    print(f"archivo csv:\n {archivoCSV}")
-    print(f"archivo excel:\n {archivoEXCEL}")
-    print(f"archivo sql:\n {archivoSQL}")
+    selColumna = asociar_valores("/Users/lidiacaneiropardo/Desktop/archivos/housing.xlsx")
 
+    print(f"archivo csv:\n {selColumna}")
 
-    selColumnaCSV = asociar_valores_csv(r"f:\Uni_IA\2ºaño\ES\Otros\housing.csv")
-    selColumnaEXCEL = asociar_valores_excel(r"f:\Uni_IA\2ºaño\ES\Otros\housing.xlsx")
-    selColumnaSQL = asociar_valores_db(r"f:\Uni_IA\2ºaño\ES\Otros\housing.db")
-
-    print(f"archivo csv:\n {selColumnaCSV}")
-    print(f"archivo excel:\n {selColumnaEXCEL}")
-    print(f"archivo sql:\n {selColumnaSQL}")
-
-
-    modeloCSV = test_modelos(archivoCSV)
+    modelo = test_modelos(archivo)
     
-
-    print(f"R^2, MSE: {modeloCSV}")
+    print(f"R^2, MSE: {modelo}")
     
-
-
-
 
 if __name__ == "__main__":
     main()
