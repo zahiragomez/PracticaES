@@ -138,6 +138,10 @@ class PantallaPrincipal(tk.Frame):
 
         def confirmar_seleccion_x():
             selected_variables_x = [listbox_variables_x.get(idx) for idx in listbox_variables_x.curselection()]
+            # Compruba que la columna sea numerica
+            if not all(self.es_columna_numerica(variable) for variable in selected_variables_x):
+                print("Error: Todas las variables seleccionadas deben ser numéricas.")
+                return
             self.variables_seleccionadas_x = selected_variables_x
             print(f"Variables X seleccionadas: {selected_variables_x}")
 
@@ -174,6 +178,10 @@ class PantallaPrincipal(tk.Frame):
 
         def confirmar_seleccion_y():
             selected_variable_y = listbox_variables_y.get(listbox_variables_y.curselection())
+            # Comprueba si la  columna es numerica
+            if not self.es_columna_numerica(selected_variable_y):
+                print("Error: La variable seleccionada debe ser numérica.")
+                return
             self.variables_seleccionadas_y = [selected_variable_y]
             print(f"Variable Y seleccionada: {selected_variable_y}")
 
@@ -182,6 +190,14 @@ class PantallaPrincipal(tk.Frame):
 
         confirmar_button_y = tk.Button(ventana_variables_y, text="Confirmar", command=confirmar_seleccion_y)
         confirmar_button_y.pack(side=tk.BOTTOM, pady=10)
+
+    def es_columna_numerica(self, columna):
+        try:
+            # Try converting the column to numeric
+            pd.to_numeric(importar_archivo(self.ruta_archivo)[columna])
+            return True
+        except (ValueError, KeyError):
+            return False
         
 
     def guardar_variables_modelo(self):
