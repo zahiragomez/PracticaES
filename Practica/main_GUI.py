@@ -1,7 +1,6 @@
 
 from funciones_auxiliares import *
 import tkinter as tk
-from funciones_auxiliares import *
 from tkinter import ttk
 from tkinter import filedialog
 
@@ -61,63 +60,105 @@ class PantallaPrincipal(tk.Frame):
         }
         self.ruta_seleccionada = tk.StringVar() 
         self.columna_seleccionada = tk.StringVar()
+        self.ruta_archivo = ""  # Nuevo atributo para almacenar la ruta del archivo seleccionado
+        self.variables_seleccionadas_x = []
+        self.variables_seleccionadas_y = []
+
 
         self.iniciar_widgets()
+
+        
+
 
 
     def seleccionar_archivo(self):
             
-            ruta_archivo = filedialog.askopenfilename()
-        
-            file_data = importar_archivo(ruta_archivo)
-            # Haz algo con el archivo importado, por ejemplo:
-            
-            self.ruta_seleccionada.set(f"Ruta del archivo seleccionado: {ruta_archivo}")
+        self.ruta_archivo = filedialog.askopenfilename()
+        if self.ruta_archivo:
+            self.ruta_seleccionada.set(f"Ruta del archivo seleccionado: {self.ruta_archivo}")
            
     def seleccionar_columnas(self):
-        print("Seleccionar Columnas")
-
-        # Solicitar al usuario que seleccione un archivo
-        archivo_seleccionado = filedialog.askopenfilename()
-
-        # Verificar si se seleccionó un archivo
-        if not archivo_seleccionado:
-            print("No se seleccionó ningún archivo.")
+        if not self.ruta_archivo:
+            print("Primero selecciona un archivo.")
             return
 
-        # Obtener la extensión del archivo
-        extension = archivo_seleccionado.split(".")[-1].lower()
+        df = importar_archivo(self.ruta_archivo)
 
-        # Utilizar la función correspondiente según la extensión del archivo
-        if extension == "csv":
-            # Importar el archivo CSV
-            df = importar_archivo(archivo_seleccionado)
+        ventana_variables_x = tk.Toplevel(self)
+        ventana_variables_x.title("Seleccionar Variables X")
 
-            # Crear una nueva ventana para mostrar las variables en un Listbox
-            ventana_variables = tk.Toplevel(self)
-            ventana_variables.title("Seleccionar Variables")
+        listbox_variables_x = tk.Listbox(ventana_variables_x, selectmode=tk.MULTIPLE, exportselection=0)
+        scrollbar_y = tk.Scrollbar(ventana_variables_x, orient=tk.VERTICAL, command=listbox_variables_x.yview)
+        listbox_variables_x.config(yscrollcommand=scrollbar_y.set)
 
-            # Crear un Listbox con scroll Y
-            listbox_variables = tk.Listbox(ventana_variables, selectmode=tk.MULTIPLE, exportselection=0)
-            scrollbar_y = tk.Scrollbar(ventana_variables, orient=tk.VERTICAL, command=listbox_variables.yview)
-            listbox_variables.config(yscrollcommand=scrollbar_y.set)
+        for variable in df.columns:
+            listbox_variables_x.insert(tk.END, variable)
 
-            # Insertar las variables en el Listbox
-            for variable in df.columns:
-                listbox_variables.insert(tk.END, variable)
+        listbox_variables_x.pack(side=tk.LEFT, fill=tk.BOTH, padx=10, pady=10)
+        scrollbar_y.pack(side=tk.RIGHT, fill=tk.Y)
 
-            listbox_variables.pack(side=tk.LEFT, fill=tk.BOTH, padx=10, pady=10)
-            scrollbar_y.pack(side=tk.RIGHT, fill=tk.Y)
+        def on_variable_selected_x(event):
+            selected_variables_x = listbox_variables_x.curselection()
+            self.variables_seleccionadas_x = [listbox_variables_x.get(idx) for idx in selected_variables_x]
 
-            # Función para manejar la selección en el Listbox
-            def on_variable_selected(event):
-                selected_variables = listbox_variables.curselection()
-                selected_columns = [listbox_variables.get(idx) for idx in selected_variables]
-                self.columna_seleccionada.set(f"Columnas seleccionadas: {', '.join(selected_columns)}")
+            # Abrir ventana para seleccionar las variables Y
+            self.seleccionar_variables_y()
 
-            # Asociar la función al evento <<ListboxSelect>>
-            listbox_variables.bind("<<ListboxSelect>>", on_variable_selected)
+        listbox_variables_x.bind("<<ListboxSelect>>", on_variable_selected_x)
+
+
+
+    def seleccionar_variables_y(self):
+        if not self.variables_seleccionadas_x:
+            print("Primero selecciona las variables X.")
+            return
+
+        df = importar_archivo(self.ruta_archivo)
+
+        ventana_variables_y = tk.Toplevel(self)
+        ventana_variables_y.title("Seleccionar Variable Y")
+
+        listbox_variables_y = tk.Listbox(ventana_variables_y, selectmode=tk.SINGLE, exportselection=0)
+        scrollbar_y = tk.Scrollbar(ventana_variables_y, orient=tk.VERTICAL, command=listbox_variables_y.yview)
+        listbox_variables_y.config(yscrollcommand=scrollbar_y.set)
+
+        for variable in df.columns:
+            if variable not in self.variables_seleccionadas_x:
+                listbox_variables_y.insert(tk.END, variable)
+
+        listbox_variables_y.pack(side=tk.LEFT, fill=tk.BOTH, padx=10, pady=10)
+        scrollbar_y.pack(side=tk.RIGHT, fill=tk.Y)
+
+        def on_variable_selected_y(event):
+            selected_variable_y = listbox_variables_y.get(listbox_variables_y.curselection())
+            self.variables_seleccionadas_y = [selected_variable_y]
+            print(f"Variable Y seleccionada: {selected_variable_y}")
+
+        listbox_variables_y.bind("<<ListboxSelect>>", on_variable_selected_y)
         
+
+    def guardar_variables_modelo(self):
+        # Verificar si se han seleccionado variables
+        if not self.variables_seleccionadas:
+            print("No se han seleccionado variables para el modelo de regresión.")
+            return
+
+        # Aquí puedes hacer lo que necesites con las variables seleccionadas.
+        # Por ejemplo, podrías asignarlas a una variable X para el modelo de regresión.
+        variable_X = self.variables_seleccionadas
+
+        # Imprimir o hacer algo con la variable X
+        print(f"Variables seleccionadas para el modelo de regresión (variable X): {', '.join(variable_X)}")
+
+        # Agrega una etiqueta para mostrar las variables seleccionadas para X
+        etiqueta_variables_x = tk.Label(
+            self,
+            text=f"Variables seleccionadas para X: {', '.join(variable_X)}",
+            font=("Comfortaa", 14),
+            bg="white",
+            fg="light blue"
+        )
+        etiqueta_variables_x.pack(side=tk.TOP, fill=tk.BOTH, padx=30, pady=10)
 
     #Ahora crearemos los atributos que tiene la pantalla principal
 
@@ -189,6 +230,41 @@ class PantallaPrincipal(tk.Frame):
             fg="light blue"
         )
         columna_label.pack(side=tk.TOP, fill=tk.BOTH, padx=30, pady=10)
+
+        # Botón para seleccionar el archivo y mostrar variables disponibles
+        seleccionar_archivo_button = tk.Button(
+            self,
+            text="Seleccionar Archivo y Mostrar Variables",
+            command=self.seleccionar_columnas,
+            justify=tk.CENTER,
+            font=("Comfortaa", 14),
+            bg="white",
+            fg="light blue"
+        )
+        seleccionar_archivo_button.pack(side=tk.TOP, padx=160, pady=10)
+
+        # Etiqueta para mostrar la columna seleccionada
+        columna_label = tk.Label(
+            self,
+            textvariable=self.columna_seleccionada,
+            font=("Comfortaa", 14),
+            bg="white",
+            fg="light blue"
+        )
+        columna_label.pack(side=tk.TOP, fill=tk.BOTH, padx=30, pady=10)
+
+        # Botón para guardar las variables seleccionadas para el modelo
+        boton_guardar_variables = tk.Button(
+            self,
+            text="Guardar Variables para el Modelo",
+            command=self.guardar_variables_modelo,
+            justify=tk.CENTER,
+            font=("Comfortaa", 14),
+            bg="white",
+            fg="light blue"
+        )
+        boton_guardar_variables.pack(side=tk.TOP, padx=160, pady=10)
+            
         
         
 
