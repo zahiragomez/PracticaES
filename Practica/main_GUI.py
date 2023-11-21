@@ -141,8 +141,10 @@ class PantallaPrincipal(tk.Frame):
             self.variables_seleccionadas_x = selected_variables_x
             print(f"Variables X seleccionadas: {selected_variables_x}")
 
-            # Close the window after confirming variable selections
+            # Cierra  la ventana despues de confirmar
             ventana_variables_x.destroy()
+            # Abre ventana para seleccionar las y
+            self.seleccionar_variables_y()
 
         confirmar_button_x = tk.Button(ventana_variables_x, text="Confirmar", command=confirmar_seleccion_x)
         confirmar_button_x.pack(side=tk.BOTTOM, pady=10)
@@ -175,7 +177,7 @@ class PantallaPrincipal(tk.Frame):
             self.variables_seleccionadas_y = [selected_variable_y]
             print(f"Variable Y seleccionada: {selected_variable_y}")
 
-            # Close the window after confirming variable selection
+            # Close la ventana despues de confirmar
             ventana_variables_y.destroy()
 
         confirmar_button_y = tk.Button(ventana_variables_y, text="Confirmar", command=confirmar_seleccion_y)
