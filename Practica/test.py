@@ -6,6 +6,10 @@ import tkinter as tk
 from tkinter import filedialog
 import sqlite3
 import shutil
+import pickle
+import matplotlib.pyplot as plt
+import statsmodels.api as sm
+import  os
 
 #PARA LA CREACIÓN DE MODELOS
 # Tratamiento de datos
@@ -43,10 +47,9 @@ warnings.filterwarnings('ignore')
 
 class TestFuncionesAuxiliares(unittest.TestCase):
 
-<<<<<<< HEAD
     def test_importar_csv(self):
         # Ruta al archivo de prueba
-        archivo_prueba = r"f:\Uni_IA\2ºaño\ES\Otros\housing.db"  
+        archivo_prueba = r"c:\Users\Usuario\Downloads\\housing.db"  
 
         # Leer el contenido del archivo original
         with open(archivo_prueba, 'r') as archivo_original:
@@ -76,8 +79,8 @@ class TestFuncionesAuxiliares(unittest.TestCase):
 
     def test_importar_excel(self): 
         # Ruta al archivo de prueba
-        archivo_prueba = r"f:\Uni_IA\2ºaño\ES\Otros\housing.xlsx" 
-        archtemp = r"f:\Uni_IA\2ºaño\ES\Otros\temporal.xlsx"
+        archivo_prueba = r"c:\Users\Usuario\Downloads\\housing.xlsx" 
+        archtemp = r"c:\Users\Usuario\Downloads\\temporal.xlsx"
 
         shutil.copy(archivo_prueba, archtemp)
 
@@ -104,15 +107,8 @@ class TestFuncionesAuxiliares(unittest.TestCase):
 
     def test_importar_db(self):
         # Ruta al archivo de prueba
-        archivo_prueba = r"f:\Uni_IA\2ºaño\ES\Otros\housing.db"
-        archtemp = r"f:\Uni_IA\2ºaño\ES\Otros\temporal.db"
-=======
-    def test_importar_archivo(self): 
-        # Ruta al archivo de prueba 
-        archivo_prueba = "/Users/lidiacaneiropardo/Desktop/archivos/housing.xlsx"
-        archtemp = "/Users/lidiacaneiropardo/Desktop/archivos/temporal.xlsx"
-        extension = archivo_prueba.split(".")[-1].lower()
->>>>>>> 5385dc3c2c62a0b37a1765994c312342e154f2bb
+        archivo_prueba = r"c:\Users\Usuario\Downloads\housing.db"
+        archtemp = r"c:\Users\Usuario\Downloads\temporal.db"
         
         shutil.copy(archivo_prueba, archtemp)
 
@@ -220,6 +216,30 @@ class TestFuncionesAuxiliares(unittest.TestCase):
 
         #para que salga la ventana
         ventana_prueba.mainloop()
+    
+    def load_and_check_files(model_file="modelo.pkl", data_file="datos.csv"):
+    # Cargar el modelo desde el archivo binario
+        with open(model_file, "rb") as f:
+            loaded_model = pickle.load(f)
+
+        # Mostrar el resumen del modelo cargado
+        print("Resumen del modelo cargado:")
+        print(loaded_model.summary())
+
+        # Cargar los datos desde el archivo CSV
+        loaded_data = pd.read_csv(data_file)
+
+        # Mostrar las primeras filas de los datos cargados
+        print("\nPrimeras filas de los datos cargados:")
+        print(loaded_data.head())
+
+        # Eliminar los archivos después de cargarlos y mostrar información
+        try:
+            os.remove(model_file)
+            os.remove(data_file)
+            print(f"\nArchivos '{model_file}' y '{data_file}' eliminados correctamente.")
+        except FileNotFoundError:
+            print("Los archivos no se encontraron. No se eliminaron.")
 
     def test_modelos(self):
         
@@ -343,8 +363,11 @@ class TestFuncionesAuxiliares(unittest.TestCase):
         df = pd.read_sql_query("SELECT * FROM california_housing_dataset", conn)
     
         return df
+    
+    
         
     
 
 if __name__ == "__main__":
     unittest.main()
+    load_and_check_files()

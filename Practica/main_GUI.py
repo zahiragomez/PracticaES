@@ -136,14 +136,16 @@ class PantallaPrincipal(tk.Frame):
         listbox_variables_x.pack(side=tk.LEFT, fill=tk.BOTH, padx=10, pady=10)
         scrollbar_y.pack(side=tk.RIGHT, fill=tk.Y)
 
-        def on_variable_selected_x(event):
-            selected_variables_x = listbox_variables_x.curselection()
-            self.variables_seleccionadas_x = [listbox_variables_x.get(idx) for idx in selected_variables_x]
+        def confirmar_seleccion_x():
+            selected_variables_x = [listbox_variables_x.get(idx) for idx in listbox_variables_x.curselection()]
+            self.variables_seleccionadas_x = selected_variables_x
+            print(f"Variables X seleccionadas: {selected_variables_x}")
 
-            # Abrir ventana para seleccionar las variables Y
-            self.seleccionar_variables_y()
+            # Close the window after confirming variable selections
+            ventana_variables_x.destroy()
 
-        listbox_variables_x.bind("<<ListboxSelect>>", on_variable_selected_x)
+        confirmar_button_x = tk.Button(ventana_variables_x, text="Confirmar", command=confirmar_seleccion_x)
+        confirmar_button_x.pack(side=tk.BOTTOM, pady=10)
 
 
 
@@ -168,12 +170,16 @@ class PantallaPrincipal(tk.Frame):
         listbox_variables_y.pack(side=tk.LEFT, fill=tk.BOTH, padx=10, pady=10)
         scrollbar_y.pack(side=tk.RIGHT, fill=tk.Y)
 
-        def on_variable_selected_y(event):
+        def confirmar_seleccion_y():
             selected_variable_y = listbox_variables_y.get(listbox_variables_y.curselection())
             self.variables_seleccionadas_y = [selected_variable_y]
             print(f"Variable Y seleccionada: {selected_variable_y}")
 
-        listbox_variables_y.bind("<<ListboxSelect>>", on_variable_selected_y)
+            # Close the window after confirming variable selection
+            ventana_variables_y.destroy()
+
+        confirmar_button_y = tk.Button(ventana_variables_y, text="Confirmar", command=confirmar_seleccion_y)
+        confirmar_button_y.pack(side=tk.BOTTOM, pady=10)
         
 
     def guardar_variables_modelo(self):

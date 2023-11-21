@@ -7,16 +7,16 @@ from modelo_regresion_lineal import test_modelos
     #esto furrula?
     # Rutas archivos: 
     # Samuel: f:\Uni_IA\2ºaño\ES\Otros\housing.xlsx
-    # Zahira:
+    # Zahira: "c:\Users\Usuario\Downloads\
     # Ainhoa: "C:\Users\lovea\Downloads\housing.db"
     # Lidia: "/Users/lidiacaneiropardo/Downloads/housing.db"
 
 def main():
-    archivo = importar_archivo("/Users/lidiacaneiropardo/Desktop/archivos/housing.xlsx")
+    archivo = importar_archivo(r"c:\Users\Usuario\Downloads\housing.xlsx")
 
     print(f"archivo csv:\n {archivo}")
 
-    selColumna = asociar_valores("/Users/lidiacaneiropardo/Desktop/archivos/housing.xlsx")
+    selColumna = asociar_valores(r"c:\Users\Usuario\Downloads\housing.xlsx")
 
     print(f"archivo csv:\n {selColumna}")
 
