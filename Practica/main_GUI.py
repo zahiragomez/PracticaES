@@ -76,7 +76,46 @@ class PantallaPrincipal(tk.Frame):
         self.ruta_archivo = filedialog.askopenfilename()
         if self.ruta_archivo:
             self.ruta_seleccionada.set(f"Ruta del archivo seleccionado: {self.ruta_archivo}")
+
+
+
+    def seleccionar_variable_x(self):
+        self.ruta_archivo = filedialog.askopenfilename()
+        if self.ruta_archivo:
+            self.ruta_seleccionada.set(f"Ruta del archivo seleccionado: {self.ruta_archivo}")
+            self.columna_seleccionada.set("")
            
+
+
+    def seleccionar_variable_y(self):
+        if not self.ruta_archivo:
+            print("Primero selecciona un archivo.")
+            return
+
+        df = importar_archivo(self.ruta_archivo)
+
+        ventana_variables_y = tk.Toplevel(self)
+        ventana_variables_y.title("Seleccionar Variable Y")
+
+        listbox_variables_y = tk.Listbox(ventana_variables_y, selectmode=tk.SINGLE, exportselection=0)
+        scrollbar_y = tk.Scrollbar(ventana_variables_y, orient=tk.VERTICAL, command=listbox_variables_y.yview)
+        listbox_variables_y.config(yscrollcommand=scrollbar_y.set)
+
+        for variable in df.columns:
+            listbox_variables_y.insert(tk.END, variable)
+
+        listbox_variables_y.pack(side=tk.LEFT, fill=tk.BOTH, padx=10, pady=10)
+        scrollbar_y.pack(side=tk.RIGHT, fill=tk.Y)
+
+        def on_variable_selected_y(event):
+            selected_variable_y = listbox_variables_y.get(listbox_variables_y.curselection())
+            self.variables_seleccionadas_y = [selected_variable_y]
+            self.columna_seleccionada.set(f"Variable Y seleccionada: {selected_variable_y}")
+            print(f"Variable Y seleccionada: {selected_variable_y}")
+
+        listbox_variables_y.bind("<<ListboxSelect>>", on_variable_selected_y)
+
+
     def seleccionar_columnas(self):
         if not self.ruta_archivo:
             print("Primero selecciona un archivo.")
@@ -207,63 +246,6 @@ class PantallaPrincipal(tk.Frame):
             fg="light blue"
         )
         columna_label.pack(side=tk.TOP, fill=tk.BOTH, padx=30, pady=30)
-
-
-         # Botón para seleccionar el archivo y mostrar variables disponibles
-        seleccionar_archivo_button = tk.Button(
-            self,
-            text="Seleccionar Archivo y Mostrar Variables",
-            command=self.seleccionar_columnas,
-            justify=tk.CENTER,
-            font=("Comfortaa", 14),
-            bg="white",
-            fg="light blue"
-        )
-        seleccionar_archivo_button.pack(side=tk.TOP, padx=160, pady=10)
-
-        # Etiqueta para mostrar la columna seleccionada
-        columna_label = tk.Label(
-            self,
-            textvariable=self.columna_seleccionada,
-            font=("Comfortaa", 14),
-            bg="white",
-            fg="light blue"
-        )
-        columna_label.pack(side=tk.TOP, fill=tk.BOTH, padx=30, pady=10)
-
-        # Botón para seleccionar el archivo y mostrar variables disponibles
-        seleccionar_archivo_button = tk.Button(
-            self,
-            text="Seleccionar Archivo y Mostrar Variables",
-            command=self.seleccionar_columnas,
-            justify=tk.CENTER,
-            font=("Comfortaa", 14),
-            bg="white",
-            fg="light blue"
-        )
-        seleccionar_archivo_button.pack(side=tk.TOP, padx=160, pady=10)
-
-        # Etiqueta para mostrar la columna seleccionada
-        columna_label = tk.Label(
-            self,
-            textvariable=self.columna_seleccionada,
-            font=("Comfortaa", 14),
-            bg="white",
-            fg="light blue"
-        )
-        columna_label.pack(side=tk.TOP, fill=tk.BOTH, padx=30, pady=10)
-
-        # Botón para guardar las variables seleccionadas para el modelo
-        boton_guardar_variables = tk.Button(
-            self,
-            text="Guardar Variables para el Modelo",
-            command=self.guardar_variables_modelo,
-            justify=tk.CENTER,
-            font=("Comfortaa", 14),
-            bg="white",
-            fg="light blue"
-        )
-        boton_guardar_variables.pack(side=tk.TOP, padx=160, pady=10)
             
         
         
