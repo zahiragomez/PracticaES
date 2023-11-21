@@ -28,49 +28,9 @@ def importar_archivo(ruta_archivo):
 
 
 
-def asociar_valores_csv(ruta_csv):
-    # Lee el archivo CSV
-    df = importar_archivo(ruta_csv)
-
-    # Añade nombres a las columnas
-    df['column'] = [i for i in range(1, len(df) + 1)]
-
-    # Pide al usuario que introduzca el índice de una columna
-    nombre_columna_seleccionada = int(input("Introduzca el índice de la columna a seleccionar: "))
-
-    # Comprueba si el índice introducido por el usuario es válido
-    if nombre_columna_seleccionada in df['column']:
-        # Si es válido, selecciona la columna
-        columna_seleccionada = df.iloc[:, nombre_columna_seleccionada - 1]  # Restamos 1 porque iloc[] es de base 0
-        # Imprime la columna seleccionada
-        return columna_seleccionada
-    else:
-        #print('El índice introducido no corresponde a ninguna columna.')
-        return None
-
-def asociar_valores_excel(ruta_excel):
-    # Lee el archivo Excel
-    df = importar_archivo(ruta_excel)
-
-    # Añade nombres a las columnas
-    df['column'] = [i for i in range(1, len(df) + 1)]
-
-    # Pide al usuario que introduzca el índice de una columna
-    nombre_columna_seleccionada = int(input("Introduzca el índice de la columna a seleccionar: "))
-
-    # Comprueba si el índice introducido por el usuario es válido
-    if nombre_columna_seleccionada in df['column']:
-        # Si es válido, selecciona la columna
-        columna_seleccionada = df.iloc[:, nombre_columna_seleccionada - 1]  # Restamos 1 porque iloc[] es de base 0
-        # Imprime la columna seleccionada
-        return columna_seleccionada
-    else:
-        #print('El índice introducido no corresponde a ninguna columna.')
-        return None
-
-def asociar_valores_db(ruta_db):
-    # Lee el archivo SQL
-    df = importar_archivo(ruta_db)
+def asociar_valores(ruta_archivo):
+    # Lee el archivo dependiendo de la extensión
+    df = importar_archivo(ruta_archivo)
 
     # Añade nombres a las columnas
     df['column'] = [i for i in range(1, len(df) + 1)]

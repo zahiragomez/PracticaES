@@ -1,5 +1,5 @@
 import unittest
-from funciones_auxiliares import importar_archivo_csv, importar_archivo_excel, importar_archivo_db
+from funciones_auxiliares import importar_archivo, asociar_valores
 import tempfile
 import os
 import tkinter as tk
@@ -43,6 +43,7 @@ warnings.filterwarnings('ignore')
 
 class TestFuncionesAuxiliares(unittest.TestCase):
 
+<<<<<<< HEAD
     def test_importar_csv(self):
         # Ruta al archivo de prueba
         archivo_prueba = r"f:\Uni_IA\2ºaño\ES\Otros\housing.db"  
@@ -105,20 +106,32 @@ class TestFuncionesAuxiliares(unittest.TestCase):
         # Ruta al archivo de prueba
         archivo_prueba = r"f:\Uni_IA\2ºaño\ES\Otros\housing.db"
         archtemp = r"f:\Uni_IA\2ºaño\ES\Otros\temporal.db"
+=======
+    def test_importar_archivo(self): 
+        # Ruta al archivo de prueba 
+        archivo_prueba = "/Users/lidiacaneiropardo/Desktop/archivos/housing.xlsx"
+        archtemp = "/Users/lidiacaneiropardo/Desktop/archivos/temporal.xlsx"
+        extension = archivo_prueba.split(".")[-1].lower()
+>>>>>>> 5385dc3c2c62a0b37a1765994c312342e154f2bb
         
         shutil.copy(archivo_prueba, archtemp)
 
         try:
-            # Prueba para importar un archivo CSV
-            resultado = importar_archivo_db(archtemp)
+            # Prueba para importar un archivo Excel
+            resultado = importar_archivo(archtemp)
 
             # Verifica que el resultado no sea nulo
             self.assertIsNotNone(resultado)
 
             # Convierte el contenido original en un DataFrame directamente
-            conn = sqlite3.connect(archtemp)
-            df_original = pd.read_sql_query("SELECT * FROM california_housing_dataset", conn)
-            conn.close()
+            if extension == "csv":
+                df_original = pd.read_csv(archtemp)
+            elif extension == "xlsx" or extension == "xls":
+                df_original = pd.read_excel(archtemp)
+            elif extension == "db":
+                conn = sqlite3.connect(archtemp)
+                df_original = pd.read_sql_query("SELECT * FROM california_housing_dataset", conn)
+                conn.close()
 
             # Compara los DataFrames
             self.assertTrue(df_original.equals(resultado))
@@ -130,29 +143,15 @@ class TestFuncionesAuxiliares(unittest.TestCase):
             if os.path.exists(archtemp):
                 os.remove(archtemp)
 
-    def test_seleccionar_columna_csv(self):
-        df = importar_archivo_csv('archivos/housing.csv')
+    def test_seleccionar_columna(self): 
+        df = importar_archivo("/Users/lidiacaneiropardo/Desktop/archivos/housing.xlsx")
 
-        columna = df.iloc[:, 0] # 0 porque es la primera columna
-        self.assertEqual(len(columna), 20640)
-        self.assertEqual(columna.min(), -124.35)
-        self.assertEqual(columna.max(), -114.31)
+        # Escogemos una columna 
+        col_original  = df.iloc[:, 0]
 
-    def test_seleccionar_columna_xlsx(self):
-        df = importar_archivo_excel('archivos/housing.xlsx')
-
-        columna = df.iloc[:, 0]
-        self.assertEqual(len(columna), 20640)
-        self.assertEqual(columna.min(), -124.35)
-        self.assertEqual(columna.max(), -114.31)
-
-    def test_seleccionar_columna_db(self):
-        df = importar_archivo_db('archivos/housing.db')
-
-        columna = df.iloc[:, 0]
-        self.assertEqual(len(columna), 20640)
-        self.assertEqual(columna.min(), -124.35)
-        self.assertEqual(columna.max(), -114.31)
+        self.assertEqual(len(col_original), 20640)
+        self.assertEqual(col_original.min(), -124.35)
+        self.assertEqual(col_original.max(), -114.31)
 
 
     def test_interfaz(self):
@@ -346,8 +345,6 @@ class TestFuncionesAuxiliares(unittest.TestCase):
         return df
         
     
-
-
 
 if __name__ == "__main__":
     unittest.main()
