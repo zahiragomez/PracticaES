@@ -1,9 +1,9 @@
-
 from funciones_auxiliares import *
 import tkinter as tk
-from tkinter import ttk
 from tkinter import filedialog
-import tkinter.messagebox as messagebox  # Importa el módulo messagebox
+from modelo_regresion_lineal import test_modelos
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+
 class Manager(tk.Tk):
 
     def __init__(self, *args, **kwargs):
@@ -49,6 +49,11 @@ class PantallaPrincipal(tk.Frame):
 
         super().__init__(parent)
 
+        self.col_x = None
+        self.col_y = None
+        self.plt = None
+        self.grafica = None
+
         self.configure(background="light blue")
         self.controller = controller
         self.archivos_disponibles = {
@@ -72,169 +77,43 @@ class PantallaPrincipal(tk.Frame):
         if self.ruta_archivo:
             self.ruta_seleccionada.set(f"Ruta del archivo seleccionado: {self.ruta_archivo}")
 
+    def cambia_columna_x(self, event):
+        if self.listbox_x.curselection():
+            self.col_x = self.listbox_x.curselection()[0]
+            self.columna_x.config(text='Columna X: ' + str(self.col_x))
 
-    def seleccionar_variable_x(self):
-        self.ruta_archivo = filedialog.askopenfilename()
-        if self.ruta_archivo:
-            self.ruta_seleccionada.set(f"Ruta del archivo seleccionado: {self.ruta_archivo}")
-            self.columna_seleccionada.set("")
-           
-    def mostrar_columnas_seleccionadas(self):
-        if self.variables_seleccionadas_x:
-            messagebox.showinfo("Columnas Seleccionadas", f"Variables seleccionadas para X: {', '.join(self.variables_seleccionadas_x)}")
-        else:
-            messagebox.showinfo("Sin Columnas Seleccionadas", "No se han seleccionado variables para X.")
+            if self.col_y is not None:
+                if self.plt is not None:
+                    self.plt.close()
 
-    def mostrar_variable_y_seleccionada(self):
-        if self.variables_seleccionadas_y:
-            messagebox.showinfo("Variable Y Seleccionada", f"Variable Y seleccionada: {self.variables_seleccionadas_y[0]}")
-        else:
-            messagebox.showinfo("Sin Variable Y Seleccionada", "No se ha seleccionado una variable para Y.")
+                fig, plt = test_modelos(self.col_x, self.col_y)
+                self.plt = plt
+                
+                if self.grafica:
+                    self.grafica.pop()
+                    self.grafica.destroy()
+                
+                self.grafica = FigureCanvasTkAgg(fig, master=self).get_tk_widget()
+                self.grafica.pack()
 
-    def mostrar_seleccion_variables(self):
-        # Crea y muestra un cuadro de mensaje con las variables seleccionadas para X e Y
-        message = f"Variables seleccionadas para X: {', '.join(self.variables_seleccionadas_x)}\n"
-        message += f"Variable seleccionada para Y: {', '.join(self.variables_seleccionadas_y)}"
-        messagebox.showinfo("Variables Seleccionadas", message)
+    def cambia_columna_y(self, event):
+        if self.listbox_y.curselection():
+            self.col_y = self.listbox_y.curselection()[0]
+            self.columna_y.config(text='Columna Y: ' + str(self.col_y))
 
-    def seleccionar_variable_y(self):
-        if not self.ruta_archivo:
-            print("Primero selecciona un archivo.")
-            return
+            if self.col_x is not None:
+                if self.plt is not None:
+                    self.plt.close()
 
-        df = importar_archivo(self.ruta_archivo)
-
-        ventana_variables_y = tk.Toplevel(self)
-        ventana_variables_y.title("Seleccionar Variable Y")
-
-        listbox_variables_y = tk.Listbox(ventana_variables_y, selectmode=tk.SINGLE, exportselection=0)
-        scrollbar_y = tk.Scrollbar(ventana_variables_y, orient=tk.VERTICAL, command=listbox_variables_y.yview)
-        listbox_variables_y.config(yscrollcommand=scrollbar_y.set)
-
-        for variable in df.columns:
-            listbox_variables_y.insert(tk.END, variable)
-
-        listbox_variables_y.pack(side=tk.LEFT, fill=tk.BOTH, padx=10, pady=10)
-        scrollbar_y.pack(side=tk.RIGHT, fill=tk.Y)
-
-        def on_variable_selected_y(event):
-            selected_variable_y = listbox_variables_y.get(listbox_variables_y.curselection())
-            self.variables_seleccionadas_y = [selected_variable_y]
-            self.columna_seleccionada.set(f"Variable Y seleccionada: {selected_variable_y}")
-            print(f"Variable Y seleccionada: {selected_variable_y}")
-
-        listbox_variables_y.bind("<<ListboxSelect>>", on_variable_selected_y)
-
-
-    def seleccionar_columnas(self):
-        if not self.ruta_archivo:
-            print("Primero selecciona un archivo.")
-            return
-
-        df = importar_archivo(self.ruta_archivo)
-
-        ventana_variables_x = tk.Toplevel(self)
-        ventana_variables_x.title("Seleccionar Variables X")
-
-        listbox_variables_x = tk.Listbox(ventana_variables_x, selectmode=tk.MULTIPLE, exportselection=0)
-        scrollbar_y = tk.Scrollbar(ventana_variables_x, orient=tk.VERTICAL, command=listbox_variables_x.yview)
-        listbox_variables_x.config(yscrollcommand=scrollbar_y.set)
-
-        for variable in df.columns:
-            listbox_variables_x.insert(tk.END, variable)
-
-        listbox_variables_x.pack(side=tk.LEFT, fill=tk.BOTH, padx=10, pady=10)
-        scrollbar_y.pack(side=tk.RIGHT, fill=tk.Y)
-
-        def confirmar_seleccion_x():
-            selected_variables_x = [listbox_variables_x.get(idx) for idx in listbox_variables_x.curselection()]
-            # Compruba que la columna sea numerica
-            if not all(self.es_columna_numerica(variable) for variable in selected_variables_x):
-                print("Error: Todas las variables seleccionadas deben ser numéricas.")
-                return
-            self.variables_seleccionadas_x = selected_variables_x
-            print(f"Variables X seleccionadas: {selected_variables_x}")
-
-            # Muestra las columnas seleccionadas en la GUI
-            self.mostrar_columnas_seleccionadas()
-            # Cierra  la ventana despues de confirmar
-            ventana_variables_x.destroy()
-            # Abre ventana para seleccionar las y
-            self.seleccionar_variables_y()
-
-        confirmar_button_x = tk.Button(ventana_variables_x, text="Confirmar", command=confirmar_seleccion_x)
-        confirmar_button_x.pack(side=tk.BOTTOM, pady=10)
-
-
-    def seleccionar_variables_y(self):
-        if not self.variables_seleccionadas_x:
-            print("Primero selecciona las variables X.")
-            return
-
-        df = importar_archivo(self.ruta_archivo)
-
-        ventana_variables_y = tk.Toplevel(self)
-        ventana_variables_y.title("Seleccionar Variable Y")
-
-        listbox_variables_y = tk.Listbox(ventana_variables_y, selectmode=tk.SINGLE, exportselection=0)
-        scrollbar_y = tk.Scrollbar(ventana_variables_y, orient=tk.VERTICAL, command=listbox_variables_y.yview)
-        listbox_variables_y.config(yscrollcommand=scrollbar_y.set)
-
-        for variable in df.columns:
-            if variable not in self.variables_seleccionadas_x:
-                listbox_variables_y.insert(tk.END, variable)
-
-        listbox_variables_y.pack(side=tk.LEFT, fill=tk.BOTH, padx=10, pady=10)
-        scrollbar_y.pack(side=tk.RIGHT, fill=tk.Y)
-
-        def confirmar_seleccion_y():
-            selected_variable_y = listbox_variables_y.get(listbox_variables_y.curselection())
-            # Comprueba si la  columna es numerica
-            if not self.es_columna_numerica(selected_variable_y):
-                print("Error: La variable seleccionada debe ser numérica.")
-                return
-            self.variables_seleccionadas_y = [selected_variable_y]
-            print(f"Variable Y seleccionada: {selected_variable_y}")
-
-            # Close la ventana despues de confirmar
-            ventana_variables_y.destroy()
-            # Muestra el cuadro de mensaje con las variables seleccionadas para X e Y
-            self.mostrar_seleccion_variables()
-
-        confirmar_button_y = tk.Button(ventana_variables_y, text="Confirmar", command=confirmar_seleccion_y)
-        confirmar_button_y.pack(side=tk.BOTTOM, pady=10)
-
-    def es_columna_numerica(self, columna):
-        try:
-            # Try converting the column to numeric
-            pd.to_numeric(importar_archivo(self.ruta_archivo)[columna])
-            return True
-        except (ValueError, KeyError):
-            return False
-        
-
-    def guardar_variables_modelo(self):
-        # Verificar si se han seleccionado variables
-        if not self.variables_seleccionadas:
-            print("No se han seleccionado variables para el modelo de regresión.")
-            return
-
-        # Aquí puedes hacer lo que necesites con las variables seleccionadas.
-        # Por ejemplo, podrías asignarlas a una variable X para el modelo de regresión.
-        variable_X = self.variables_seleccionadas
-
-        # Imprimir o hacer algo con la variable X
-        print(f"Variables seleccionadas para el modelo de regresión (variable X): {', '.join(variable_X)}")
-
-        # Agrega una etiqueta para mostrar las variables seleccionadas para X
-        etiqueta_variables_x = tk.Label(
-            self,
-            text=f"Variables seleccionadas para X: {', '.join(variable_X)}",
-            font=("Comfortaa", 14),
-            bg="white",
-            fg="light blue"
-        )
-        etiqueta_variables_x.pack(side=tk.TOP, fill=tk.BOTH, padx=30, pady=10)
+                fig, plt = test_modelos(self.col_x, self.col_y)
+                self.plt = plt
+                
+                if self.grafica:
+                    self.grafica.pop()
+                    self.grafica.destroy()
+                
+                self.grafica = FigureCanvasTkAgg(fig, master=self).get_tk_widget()
+                self.grafica.pack()
 
     #Ahora crearemos los atributos que tiene la pantalla principal
 
@@ -260,69 +139,45 @@ class PantallaPrincipal(tk.Frame):
         )
         ruta_label.pack(side=tk.TOP, fill=tk.BOTH, padx=30, pady=30)
 
-        seleccionar_columna_button = tk.Button(self, 
-            text="Pulse para seleccionar la columna para la creación del modelo",
-            command=self.seleccionar_columnas,
-            justify=tk.CENTER,
-            font=("Comfortaa", 14),
-            bg="white", 
-            fg="light blue"
-        )
-        seleccionar_columna_button.pack(side=tk.TOP, padx=160, pady=160)
+        frame_horizontal = tk.Frame(self)
+        frame_horizontal.pack()
         
-        columna_label = tk.Label(
-            self,
-            textvariable=self.columna_seleccionada,
-            font=("Comfortaa", 14),
-            bg="white",
-            fg="light blue"
-        )
-        columna_label.pack(side=tk.TOP, fill=tk.BOTH, padx=30, pady=30)
-            
-        # Nuevo botón para mostrar las columnas seleccionadas
-        mostrar_columnas_button = tk.Button(self,
-                                           text="Mostrar Columnas Seleccionadas",
-                                           command=self.mostrar_columnas_seleccionadas,
-                                           font=("Comfortaa", 14),
-                                           bg="white",
-                                           fg="light blue")
-        mostrar_columnas_button.pack(side=tk.TOP, padx=20, pady=20)
-
+        self.listbox_x = tk.Listbox(frame_horizontal)
+        self.listbox_x.bind('<<ListboxSelect>>', self.cambia_columna_x)
+        self.listbox_x.pack(side=tk.LEFT)
+        self.listbox_x.insert(tk.END, 'longitude')
+        self.listbox_x.insert(tk.END, 'latitude')
+        self.listbox_x.insert(tk.END, 'housing_median_age')
+        self.listbox_x.insert(tk.END, 'total_rooms')
+        self.listbox_x.insert(tk.END, 'total_bedrooms')
+        self.listbox_x.insert(tk.END, 'population')
+        self.listbox_x.insert(tk.END, 'households')
+        self.listbox_x.insert(tk.END, 'median_income')
+        self.listbox_x.insert(tk.END, 'median_house_value')
+        self.listbox_x.insert(tk.END, 'ocean_proximity')
+        self.listbox_x.pack()
         
+        self.listbox_y = tk.Listbox(frame_horizontal)
+        self.listbox_y.bind('<<ListboxSelect>>', self.cambia_columna_y)
+        self.listbox_y.pack(side=tk.LEFT)
+        self.listbox_y.insert(tk.END, 'longitude')
+        self.listbox_y.insert(tk.END, 'latitude')
+        self.listbox_y.insert(tk.END, 'housing_median_age')
+        self.listbox_y.insert(tk.END, 'total_rooms')
+        self.listbox_y.insert(tk.END, 'total_bedrooms')
+        self.listbox_y.insert(tk.END, 'population')
+        self.listbox_y.insert(tk.END, 'households')
+        self.listbox_y.insert(tk.END, 'median_income')
+        self.listbox_y.insert(tk.END, 'median_house_value')
+        self.listbox_y.insert(tk.END, 'ocean_proximity')
+        self.listbox_y.pack()
         
+        self.columna_x = tk.Label(self)
+        self.columna_x.pack()
         
-
-        # for (key, value) in self.archivos_disponibles.items():
-        #     tk.Radiobutton(optionsFrame,
-        #                    text = key,
-        #                    command = self.move_to_crear_modelos ,
-        #                    variable = self.archivos_disponibles,
-        #                    value = value,
-        #                    font = ("Comfortaa", 14),
-        #                     bg = "white", 
-        #                     fg = "light blue"
-        #                    ).pack(
-        #                        side = tk.LEFT, 
-        #                        fill = tk.BOTH,
-        #                        expand = True, 
-        #                        padx = 5,
-        #                        pady  = 5
-        #                    )
+        self.columna_y = tk.Label(self)
+        self.columna_y.pack()
     
-
 if __name__ == "__main__":
     app = Manager()
-    #app.geometry("800x600")
     app.mainloop()
-
-    #  frame = tk.Frame()
-    #  boton = tk.Button(frame, text="Botón")
-    #  etiqueta = tk.Label(frame, text="Etiqueta")
-
-    #  boton.pack()
-    #  etiqueta.pack()
-
-    #  frame.pack()
-
-    #  app = frame
-    #  app.mainloop()
