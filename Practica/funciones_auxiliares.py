@@ -1,11 +1,7 @@
 import pandas as pd
 import sqlite3
-from tkinter import filedialog
 
 def importar_archivo(ruta_archivo):
-    # Comando para que la GUI busque el archivo
-     
-    
     # Obtener la extensión del archivo
     extension = ruta_archivo.split(".")[-1].lower()
     

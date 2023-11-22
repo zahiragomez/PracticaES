@@ -1,6 +1,5 @@
 import unittest
-from funciones_auxiliares import importar_archivo, asociar_valores
-import tempfile
+from funciones_auxiliares import importar_archivo
 import os
 import tkinter as tk
 from tkinter import filedialog
@@ -47,68 +46,11 @@ warnings.filterwarnings('ignore')
 
 class TestFuncionesAuxiliares(unittest.TestCase):
 
-    def test_importar_csv(self):
-        # Ruta al archivo de prueba
-        archivo_prueba = r"c:\Users\Usuario\Downloads\\housing.db"  
-
-        # Leer el contenido del archivo original
-        with open(archivo_prueba, 'r') as archivo_original:
-            contenido_original = archivo_original.read()
-
-        # Crear un archivo temporal
-        with tempfile.NamedTemporaryFile(mode='w', delete=False) as temp_file:
-            archtemp = temp_file.name
-            temp_file.write(contenido_original)
-
-        try:
-            # Prueba para importar un archivo CSV
-            resultado = importar_archivo_csv(archtemp)
-
-            # Verifica que el resultado no sea nulo
-            self.assertIsNotNone(resultado)
-
-            # Convierte el contenido original en un DataFrame directamente
-            df_original = pd.read_csv(archtemp)
-
-            # Compara los DataFrames
-            self.assertTrue(df_original.equals(resultado))
-        finally:
-            # Borra el archivo temporal
-            import os
-            os.remove(archtemp)
-
-    def test_importar_excel(self): 
-        # Ruta al archivo de prueba
-        archivo_prueba = r"c:\Users\Usuario\Downloads\\housing.xlsx" 
-        archtemp = r"c:\Users\Usuario\Downloads\\temporal.xlsx"
-
-        shutil.copy(archivo_prueba, archtemp)
-
-        try:
-            # Prueba para importar un archivo Excel
-            resultado = importar_archivo_excel(archtemp)
-
-            # Verifica que el resultado no sea nulo
-            self.assertIsNotNone(resultado)
-
-            # Convierte el contenido original en un DataFrame directamente
-            df_original = pd.read_excel(archtemp)
-
-            # Compara los DataFrames
-            self.assertTrue(df_original.equals(resultado))
-        except Exception as e:
-                self.fail(f"La prueba falló debido a la excepción: {str(e)}")
-
-        finally: 
-            # Borra el archivo temporal
-            if os.path.exists(archtemp):
-                os.remove(archtemp)
-
-
-    def test_importar_db(self):
-        # Ruta al archivo de prueba
-        archivo_prueba = r"c:\Users\Usuario\Downloads\housing.db"
-        archtemp = r"c:\Users\Usuario\Downloads\temporal.db"
+    def test_importar_archivo(self): 
+        # Ruta al archivo de prueba 
+        archivo_prueba = "/Users/lidiacaneiropardo/Desktop/archivos/housing.xlsx"
+        archtemp = "/Users/lidiacaneiropardo/Desktop/archivos/temporal.xlsx"
+        extension = archivo_prueba.split(".")[-1].lower()
         
         shutil.copy(archivo_prueba, archtemp)
 
@@ -148,7 +90,6 @@ class TestFuncionesAuxiliares(unittest.TestCase):
         self.assertEqual(len(col_original), 20640)
         self.assertEqual(col_original.min(), -124.35)
         self.assertEqual(col_original.max(), -114.31)
-
 
     def test_interfaz(self):
         #crea el objeto ventana
@@ -351,17 +292,10 @@ class TestFuncionesAuxiliares(unittest.TestCase):
         # Crear una conexión a la base de datos
         conn = sqlite3.connect(ruta_db)
 
-    
-        #### Conocer el nombre de la tabla 
-        # Consulta para obtener los nombres de todas las tablas en la base de datos
-        #query = "SELECT name FROM sqlite_master WHERE type='table';"
-
-        # Ejecutar la consulta y obtener los resultados
-        #tablas = pd.read_sql_query(query, conn)
-
         # Leer los datos de la base de datos
         df = pd.read_sql_query("SELECT * FROM california_housing_dataset", conn)
-    
+        conn.close()
+
         return df
     
     
@@ -370,4 +304,3 @@ class TestFuncionesAuxiliares(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-    load_and_check_files()
