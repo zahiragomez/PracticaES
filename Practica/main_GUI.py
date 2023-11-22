@@ -3,9 +3,7 @@ from funciones_auxiliares import *
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
-
-
-
+import tkinter.messagebox as messagebox  # Importa el módulo messagebox
 class Manager(tk.Tk):
 
     def __init__(self, *args, **kwargs):
@@ -61,14 +59,11 @@ class PantallaPrincipal(tk.Frame):
         self.ruta_seleccionada = tk.StringVar() 
         self.columna_seleccionada = tk.StringVar()
         self.ruta_archivo = ""  # Nuevo atributo para almacenar la ruta del archivo seleccionado
-        self.variables_seleccionadas_x = []
+        self.variables_seleccionadas_x = []  # Inicializa la lista de variables seleccionadas para X
         self.variables_seleccionadas_y = []
 
 
         self.iniciar_widgets()
-
-        
-
 
 
     def seleccionar_archivo(self):
@@ -78,14 +73,29 @@ class PantallaPrincipal(tk.Frame):
             self.ruta_seleccionada.set(f"Ruta del archivo seleccionado: {self.ruta_archivo}")
 
 
-
     def seleccionar_variable_x(self):
         self.ruta_archivo = filedialog.askopenfilename()
         if self.ruta_archivo:
             self.ruta_seleccionada.set(f"Ruta del archivo seleccionado: {self.ruta_archivo}")
             self.columna_seleccionada.set("")
            
+    def mostrar_columnas_seleccionadas(self):
+        if self.variables_seleccionadas_x:
+            messagebox.showinfo("Columnas Seleccionadas", f"Variables seleccionadas para X: {', '.join(self.variables_seleccionadas_x)}")
+        else:
+            messagebox.showinfo("Sin Columnas Seleccionadas", "No se han seleccionado variables para X.")
 
+    def mostrar_variable_y_seleccionada(self):
+        if self.variables_seleccionadas_y:
+            messagebox.showinfo("Variable Y Seleccionada", f"Variable Y seleccionada: {self.variables_seleccionadas_y[0]}")
+        else:
+            messagebox.showinfo("Sin Variable Y Seleccionada", "No se ha seleccionado una variable para Y.")
+
+    def mostrar_seleccion_variables(self):
+        # Crea y muestra un cuadro de mensaje con las variables seleccionadas para X e Y
+        message = f"Variables seleccionadas para X: {', '.join(self.variables_seleccionadas_x)}\n"
+        message += f"Variable seleccionada para Y: {', '.join(self.variables_seleccionadas_y)}"
+        messagebox.showinfo("Variables Seleccionadas", message)
 
     def seleccionar_variable_y(self):
         if not self.ruta_archivo:
@@ -145,6 +155,8 @@ class PantallaPrincipal(tk.Frame):
             self.variables_seleccionadas_x = selected_variables_x
             print(f"Variables X seleccionadas: {selected_variables_x}")
 
+            # Muestra las columnas seleccionadas en la GUI
+            self.mostrar_columnas_seleccionadas()
             # Cierra  la ventana despues de confirmar
             ventana_variables_x.destroy()
             # Abre ventana para seleccionar las y
@@ -152,7 +164,6 @@ class PantallaPrincipal(tk.Frame):
 
         confirmar_button_x = tk.Button(ventana_variables_x, text="Confirmar", command=confirmar_seleccion_x)
         confirmar_button_x.pack(side=tk.BOTTOM, pady=10)
-
 
 
     def seleccionar_variables_y(self):
@@ -187,6 +198,8 @@ class PantallaPrincipal(tk.Frame):
 
             # Close la ventana despues de confirmar
             ventana_variables_y.destroy()
+            # Muestra el cuadro de mensaje con las variables seleccionadas para X e Y
+            self.mostrar_seleccion_variables()
 
         confirmar_button_y = tk.Button(ventana_variables_y, text="Confirmar", command=confirmar_seleccion_y)
         confirmar_button_y.pack(side=tk.BOTTOM, pady=10)
@@ -228,18 +241,15 @@ class PantallaPrincipal(tk.Frame):
     def iniciar_widgets(self):
 
         #Primero creamos una etiqueta para la función que realiza el programa
-
-        archivo_seleccionado = tk.Button(self, 
-                 text = "Pulse para seleccionar el tipo de archivo para la creación del modelo",
-                 command = self.seleccionar_archivo,
-                 justify = tk.CENTER,
-                 font = ("Comfortaa", 14),
-                 bg = "white", 
-                 fg = "light blue"
-
-                 ).pack(side = tk.TOP,
-                     padx = 160, #distancia de la etiqueta al margen por el eje x
-                     pady = 160)
+        archivo_seleccionado_button = tk.Button(self, 
+            text="Pulse para seleccionar el tipo de archivo para la creación del modelo",
+            command=self.seleccionar_archivo,
+            justify=tk.CENTER,
+            font=("Comfortaa", 14),
+            bg="white",
+            fg="light blue"
+        )
+        archivo_seleccionado_button.pack(side=tk.TOP, padx=160, pady=160)
         
         ruta_label = tk.Label(
             self,
@@ -250,17 +260,15 @@ class PantallaPrincipal(tk.Frame):
         )
         ruta_label.pack(side=tk.TOP, fill=tk.BOTH, padx=30, pady=30)
 
-        seleccionar_columna = tk.Button(self, 
-                 text = "Pulse para seleccionar la columna para la creación del modelo",
-                 command = self.seleccionar_columnas,
-                 justify = tk.CENTER,
-                 font = ("Comfortaa", 14),
-                 bg = "white", 
-                 fg = "light blue"
-
-                 ).pack(side = tk.TOP,
-                     padx = 160, #distancia de la etiqueta al margen por el eje x
-                     pady = 160)
+        seleccionar_columna_button = tk.Button(self, 
+            text="Pulse para seleccionar la columna para la creación del modelo",
+            command=self.seleccionar_columnas,
+            justify=tk.CENTER,
+            font=("Comfortaa", 14),
+            bg="white", 
+            fg="light blue"
+        )
+        seleccionar_columna_button.pack(side=tk.TOP, padx=160, pady=160)
         
         columna_label = tk.Label(
             self,
@@ -271,6 +279,16 @@ class PantallaPrincipal(tk.Frame):
         )
         columna_label.pack(side=tk.TOP, fill=tk.BOTH, padx=30, pady=30)
             
+        # Nuevo botón para mostrar las columnas seleccionadas
+        mostrar_columnas_button = tk.Button(self,
+                                           text="Mostrar Columnas Seleccionadas",
+                                           command=self.mostrar_columnas_seleccionadas,
+                                           font=("Comfortaa", 14),
+                                           bg="white",
+                                           fg="light blue")
+        mostrar_columnas_button.pack(side=tk.TOP, padx=20, pady=20)
+
+        
         
         
 
@@ -292,13 +310,9 @@ class PantallaPrincipal(tk.Frame):
         #                    )
     
 
-
-
-
-
-
 if __name__ == "__main__":
     app = Manager()
+    #app.geometry("800x600")
     app.mainloop()
 
     #  frame = tk.Frame()
