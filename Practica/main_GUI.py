@@ -158,14 +158,17 @@ class PantallaPrincipal(tk.Frame):
          )
         boton_examinar.grid(row=0, column=1, padx=(20, 10), pady=10, sticky=tk.E)  # Ajuste sticky para alinear a la derecha
 
+        
+        
         frame_horizontal = tk.Frame(self, bg = "light blue")
         frame_horizontal.pack()
 
-        self.columna_x = tk.Label(self)
-        self.columna_x.pack()
+        self.columna_x = tk.Label(frame_horizontal, text="Columna X:")
+        self.columna_x.grid(row=0, column=0, padx=10, pady=10, sticky=tk.W)
+
         
-        self.columna_y = tk.Label(self)
-        self.columna_y.pack()
+        self.columna_y = tk.Label(frame_horizontal, text="Columna Y:")
+        self.columna_y.grid(row=0, column=1, padx=10, pady=10, sticky=tk.W)
     
        
         self.listbox_x = tk.Listbox(frame_horizontal)
