@@ -79,8 +79,8 @@ class PantallaPrincipal(tk.Frame):
 
     def cambia_columna_x(self, event):
         if self.listbox_x.curselection():
-            self.col_x = self.listbox_x.curselection()[0]
-            self.columna_x.config(text='Columna X: ' + str(self.col_x))
+            self.col_x = self.listbox_x.get(self.listbox_x.curselection())
+            self.columna_x.config(text='Columna X: ' + self.col_x)
 
             if self.col_y is not None:
                 if self.plt is not None:
@@ -98,8 +98,8 @@ class PantallaPrincipal(tk.Frame):
 
     def cambia_columna_y(self, event):
         if self.listbox_y.curselection():
-            self.col_y = self.listbox_y.curselection()[0]
-            self.columna_y.config(text='Columna Y: ' + str(self.col_y))
+            self.col_y = self.listbox_y.get(self.listbox_y.curselection())
+            self.columna_y.config(text='Columna Y: ' + self.col_y)
 
             if self.col_x is not None:
                 if self.plt is not None:
@@ -206,3 +206,4 @@ class PantallaPrincipal(tk.Frame):
 if __name__ == "__main__":
     app = Manager()
     app.mainloop()
+
