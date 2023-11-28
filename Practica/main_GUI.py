@@ -16,8 +16,8 @@ class PantallaPrincipal(tk.Frame):
 
         self.col_x = None
         self.col_y = None
-        self.plt = None
-        self.grafica = None
+        self.fig1 = None
+        self.fig2 = None
 
         self.configure(background="light blue")
         self.controller = controller
@@ -104,9 +104,13 @@ class PantallaPrincipal(tk.Frame):
             row=3, column=0, columnspan=2, pady=10
         )
 
-        # Canvas para el gráfico
-        self.canvas = tk.Canvas(self, width=800, height=600, bg="white")
-        self.canvas.pack(padx=10, pady=10)
+        # Canvas para el gráfico 1
+        self.canvas1 = tk.Canvas(self, width=400, height=300, bg="white")
+        self.canvas1.pack(padx=10, pady=10, side=tk.LEFT)
+
+        # Canvas para el gráfico 2
+        self.canvas2 = tk.Canvas(self, width=400, height=300, bg="white")
+        self.canvas2.pack(padx=10, pady=10, side=tk.LEFT)
 
     def seleccionar_archivo(self):
         self.ruta_archivo = filedialog.askopenfilename()
@@ -142,42 +146,80 @@ class PantallaPrincipal(tk.Frame):
 
     def realizar_analisis(self):
         if self.col_x is not None and self.col_y is not None:
-            self.plt = self.test_modelos(self.col_x, self.col_y)
+            self.fig1, self.fig2 = self.test_modelos(self.col_x, self.col_y)
 
-            if self.grafica:
-                self.canvas.delete(self.grafica)
-
-            self.grafica = FigureCanvasTkAgg(
-                self.plt, master=self.canvas
-            )
-            self.grafica.draw()
-            self.grafica.get_tk_widget().pack()
+            if self.fig1 and self.fig2:
+                self.actualizar_grafica(self.fig1, self.canvas1)
+                self.actualizar_grafica(self.fig2, self.canvas2)
 
     def importar_archivo(self):
         # Puedes implementar la lógica para importar un archivo aquí
         pass
 
-    def test_modelos(self, col_x, col_y):
+    def realizar_analisis(self):
+        if self.col_x is not None and self.col_y is not None:
+            modelo = self.ajustar_modelo(self.col_x, self.col_y)
+            if modelo:
+                self.fig1, self.fig2 = self.test_modelos(self.col_x, self.col_y, modelo)
+                if self.fig1:
+                    self.actualizar_grafica(self.fig1, self.canvas1)
+                if self.fig2:
+                    self.actualizar_grafica(self.fig2, self.canvas2)
+
+    def ajustar_modelo(self, col_x, col_y):
         data = pd.read_csv(self.ruta_archivo)
 
-        datos = data[[col_x, col_y]]
+        X = data[col_x]
+        X = sm.add_constant(X, prepend=True)
+        y = data[col_y]
 
-        # Gráfico
-        fig, ax = plt.subplots(figsize=(8, 6))
-        scatter = ax.scatter(
+        modelo = sm.OLS(endog=y, exog=X).fit()
+        return modelo
+
+    def test_modelos(self, col_x, col_y, modelo):
+        data = pd.read_csv(self.ruta_archivo)
+
+        # Análisis y gráfico 1
+        fig1, ax1 = plt.subplots(figsize=(8, 6))
+        scatter1 = ax1.scatter(
             x=data[col_x],
             y=data[col_y],
-            c="#FFA500",  # Código hexadecimal para naranja
-            label="Datos de dispersión",  # Etiqueta para la leyenda
-            marker="o",  # Utiliza círculos como estilo de los puntos
+            c="#FFA500",
+            label="Datos de dispersión",
+            marker="o",
         )
-        ax.set_title(f'Distribución de {col_x} y {col_y}')
-        ax.set_xlabel('Eje X')
-        ax.set_ylabel('Eje Y')
-        # Añadir leyenda manualmente
-        ax.legend(handles=[scatter], loc='upper right')
+        ax1.set_title(f'Distribución de {col_x} y {col_y}')
+        ax1.set_xlabel('Eje X')
+        ax1.set_ylabel('Eje Y')
+        ax1.legend(handles=[scatter1], loc='upper right')
 
-        return fig
+        # Otro análisis y gráfico 2
+        fig2, ax2 = plt.subplots(figsize=(10, 6))
+        scatter2 = ax2.scatter(
+            x=data[col_x],
+            y=data[col_y],
+            c="gray",
+            label="Datos Observados",
+            marker="o",
+            alpha=0.8,
+        )
+        ax2.plot(data[col_x], modelo.predict(exog=sm.add_constant(data[col_x], prepend=True)), linestyle='-', color='blue', label="OLS", linewidth=2)
+        ci = modelo.get_prediction(exog=sm.add_constant(data[col_x], prepend=True)).summary_frame(alpha=0.05)
+        ax2.fill_between(data[col_x], ci["mean_ci_lower"], ci["mean_ci_upper"], color='orange', alpha=0.1, label='95% CI')
+        ax2.set_xlabel('Variable Independiente')
+        ax2.set_ylabel('Variable Dependiente')
+        ax2.set_title('Gráfico del Modelo con Predicciones')
+        ax2.grid(True, linestyle='--', alpha=0.5)
+        ax2.set_facecolor('#F9F9F9')
+        ax2.legend()
+
+        return fig1, fig2
+
+    def actualizar_grafica(self, fig, canvas):
+        # Utiliza FigureCanvasTkAgg para convertir la figura en un widget de Tkinter
+        canvas = FigureCanvasTkAgg(fig, master=canvas)
+        canvas.draw()
+        canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
 
 class Manager(tk.Tk):
