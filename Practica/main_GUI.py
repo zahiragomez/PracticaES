@@ -3,12 +3,7 @@ from tkinter import filedialog
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import pandas as pd
 import matplotlib.pyplot as plt
-from scipy.stats import pearsonr
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error
 import statsmodels.api as sm
-import pickle
-
 
 class PantallaPrincipal(tk.Frame):
     def __init__(self, parent, controller):
@@ -21,11 +16,6 @@ class PantallaPrincipal(tk.Frame):
 
         self.configure(background="light blue")
         self.controller = controller
-        self.archivos_disponibles = {
-            "Archivo 1": self.importar_archivo,
-            "Archivo 2": self.importar_archivo,
-            "Archivo 3": self.importar_archivo,
-        }
         self.ruta_seleccionada = tk.StringVar()
 
         self.ruta_archivo = ""
@@ -101,8 +91,27 @@ class PantallaPrincipal(tk.Frame):
             fg="black",
         )
         boton_analisis.grid(
-            row=3, column=0, columnspan=2, pady=10
+            row=3, column=0, columnspan=2, pady=10, sticky=tk.W
         )
+
+        # Etiquetas para las variables seleccionadas
+        self.etiqueta_x = tk.Label(
+            frame_archivo_seleccionado,
+            text="Variable X seleccionada:",
+            font=("Comfortaa", 12),
+            bg="light blue",
+            fg="black",
+        )
+        self.etiqueta_x.grid(row=3, column=1, padx=(10, 10), pady=10, sticky=tk.W)
+
+        self.etiqueta_y = tk.Label(
+            frame_archivo_seleccionado,
+            text="Variable Y seleccionada:",
+            font=("Comfortaa", 12),
+            bg="light blue",
+            fg="black",
+        )
+        self.etiqueta_y.grid(row=3, column=2, padx=(10, 10), pady=10, sticky=tk.W)
 
         # Canvas para el gráfico 1
         self.canvas1 = tk.Canvas(self, width=400, height=300, bg="white")
@@ -123,10 +132,12 @@ class PantallaPrincipal(tk.Frame):
     def cambia_columna_x(self, event):
         if self.listbox_x.curselection():
             self.col_x = self.listbox_x.get(self.listbox_x.curselection())
+            self.etiqueta_x.config(text=f"Variable X seleccionada: {self.col_x}")
 
     def cambia_columna_y(self, event):
         if self.listbox_y.curselection():
             self.col_y = self.listbox_y.get(self.listbox_y.curselection())
+            self.etiqueta_y.config(text=f"Variable Y seleccionada: {self.col_y}")
 
     def actualizar_listas_columnas(self):
         try:
@@ -139,22 +150,11 @@ class PantallaPrincipal(tk.Frame):
             for columna in columnas:
                 self.listbox_x.insert(tk.END, columna)
                 self.listbox_y.insert(tk.END, columna)
+
         except pd.errors.EmptyDataError:
-            print("El archivo está vacío")
+            print("Error: El archivo está vacío")
         except pd.errors.ParserError:
-            print("Error al analizar el archivo CSV")
-
-    def realizar_analisis(self):
-        if self.col_x is not None and self.col_y is not None:
-            self.fig1, self.fig2 = self.test_modelos(self.col_x, self.col_y)
-
-            if self.fig1 and self.fig2:
-                self.actualizar_grafica(self.fig1, self.canvas1)
-                self.actualizar_grafica(self.fig2, self.canvas2)
-
-    def importar_archivo(self):
-        # Puedes implementar la lógica para importar un archivo aquí
-        pass
+            print("Error: Error al analizar el archivo CSV")
 
     def realizar_analisis(self):
         if self.col_x is not None and self.col_y is not None:
@@ -216,7 +216,7 @@ class PantallaPrincipal(tk.Frame):
         return fig1, fig2
 
     def actualizar_grafica(self, fig, canvas):
-        # Utiliza FigureCanvasTkAgg para convertir la figura en un widget de Tkinter
+        # Crear una nueva instancia de FigureCanvasTkAgg
         canvas = FigureCanvasTkAgg(fig, master=canvas)
         canvas.draw()
         canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
@@ -254,3 +254,4 @@ class Manager(tk.Tk):
 if __name__ == "__main__":
     app = Manager()
     app.mainloop()
+
