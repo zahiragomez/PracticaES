@@ -298,6 +298,64 @@ class TestFuncionesAuxiliares(unittest.TestCase):
 
         return df
     
+    def test_seleccionar_columna_csv_GUI(self): 
+        # Importar los datos
+        df = pd.read_csv("/Users/lidiacaneiropardo/Desktop/ES/Practica/archivos/housing.csv")
+
+        # Lista de columnas a seleccionar
+        columns = [col for col in df.columns if col != 'ocean_proximity']
+
+        # Llamar a la función select_columns
+        selected_df = df[columns]
+
+        # Comprobar que 'ocean_proximity' no está en las columnas seleccionadas
+        assert 'ocean_proximity' not in selected_df.columns
+
+        # Comprobar que todas las demás columnas están presentes
+        for column in columns:
+            assert column in selected_df.columns
+
+        print("Todas las columnas, excepto 'ocean_proximity', están presentes.")
+
+    def test_seleccionar_columna_excel_GUI(self): 
+        # Importar los datos
+        df = pd.read_excel("/Users/lidiacaneiropardo/Desktop/ES/Practica/archivos/housing.xlsx")
+
+        # Lista de columnas a seleccionar
+        columns = [col for col in df.columns if col != 'ocean_proximity']
+
+        # Llamar a la función select_columns
+        selected_df = df[columns]
+
+        # Comprobar que 'ocean_proximity' no está en las columnas seleccionadas
+        assert 'ocean_proximity' not in selected_df.columns
+
+        # Comprobar que todas las demás columnas están presentes
+        for column in columns:
+            assert column in selected_df.columns
+
+        print("Todas las columnas, excepto 'ocean_proximity', están presentes.")
+
+    def test_seleccionar_columna_BD_GUI(self): 
+        # Importar los datos
+        conn = sqlite3.connect("/Users/lidiacaneiropardo/Desktop/ES/Practica/archivos/housing.db")
+        df = pd.read_sql_query("SELECT * FROM california_housing_dataset", conn)
+        conn.close()
+
+        # Lista de columnas a seleccionar
+        columns = [col for col in df.columns if col != 'ocean_proximity']
+
+        # Llamar a la función select_columns
+        selected_df = df[columns]
+
+        # Comprobar que 'ocean_proximity' no está en las columnas seleccionadas
+        assert 'ocean_proximity' not in selected_df.columns
+
+        # Comprobar que todas las demás columnas están presentes
+        for column in columns:
+            assert column in selected_df.columns
+
+        print("Todas las columnas, excepto 'ocean_proximity', están presentes.")
     
         
     
