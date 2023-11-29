@@ -80,6 +80,26 @@ class PantallaPrincipal(tk.Frame):
             row=2, column=1, padx=(5, 10), pady=10, sticky=tk.W
         )
 
+        
+        # Etiqueta para la columna X seleccionada
+        self.etiqueta_x = tk.Label(
+            frame_archivo_seleccionado,  # Usa frame_archivo_seleccionado como el contenedor
+            text=f"Variable X seleccionada: {self.col_x}",
+            font=("Comfortaa", 12),
+            bg="light blue",
+            fg="black",
+        )
+        self.etiqueta_x.grid(row=3, column=0, padx=(10, 10), pady=10, sticky=tk.W)
+        # Etiqueta para la columna Y seleccionada
+        self.etiqueta_y = tk.Label(
+            frame_archivo_seleccionado,  # Usa frame_archivo_seleccionado como el contenedor
+            text=f"Variable Y seleccionada: {self.col_y}",
+            font=("Comfortaa", 12),
+            bg="light blue",
+            fg="black",
+        )
+        self.etiqueta_y.grid(row=3, column=1, padx=(10, 10), pady=10, sticky=tk.E)
+
         # Botón Realizar Análisis
         boton_analisis = tk.Button(
             frame_archivo_seleccionado,
@@ -89,29 +109,8 @@ class PantallaPrincipal(tk.Frame):
             font=("Comfortaa", 12),
             bg="white",
             fg="black",
-        )
-        boton_analisis.grid(
-            row=3, column=0, columnspan=2, pady=10, sticky=tk.W
-        )
-
-        # Etiquetas para las variables seleccionadas
-        self.etiqueta_x = tk.Label(
-            frame_archivo_seleccionado,
-            text="Variable X seleccionada:",
-            font=("Comfortaa", 12),
-            bg="light blue",
-            fg="black",
-        )
-        self.etiqueta_x.grid(row=3, column=1, padx=(10, 10), pady=10, sticky=tk.W)
-
-        self.etiqueta_y = tk.Label(
-            frame_archivo_seleccionado,
-            text="Variable Y seleccionada:",
-            font=("Comfortaa", 12),
-            bg="light blue",
-            fg="black",
-        )
-        self.etiqueta_y.grid(row=3, column=2, padx=(10, 10), pady=10, sticky=tk.W)
+        )   
+        boton_analisis.grid(row=4, column=0, columnspan=2, pady=10, sticky=tk.NSEW)
 
         # Canvas para el gráfico 1
         self.canvas1 = tk.Canvas(self, width=400, height=300, bg="white")
@@ -134,6 +133,7 @@ class PantallaPrincipal(tk.Frame):
             self.col_x = self.listbox_x.get(self.listbox_x.curselection())
             self.etiqueta_x.config(text=f"Variable X seleccionada: {self.col_x}")
 
+
     def cambia_columna_y(self, event):
         if self.listbox_y.curselection():
             self.col_y = self.listbox_y.get(self.listbox_y.curselection())
@@ -151,6 +151,14 @@ class PantallaPrincipal(tk.Frame):
                 self.listbox_x.insert(tk.END, columna)
                 self.listbox_y.insert(tk.END, columna)
 
+            # Etiqueta para la columna X seleccionada
+            etiqueta_x_text = f"Variable X seleccionada: {self.col_x}"
+            self.etiqueta_x.config(text=etiqueta_x_text)
+
+            # Etiqueta para la columna Y seleccionada
+            etiqueta_y_text = f"Variable Y seleccionada: {self.col_y}"
+            self.etiqueta_y.config(text=etiqueta_y_text)
+
         except pd.errors.EmptyDataError:
             print("Error: El archivo está vacío")
         except pd.errors.ParserError:
@@ -165,6 +173,7 @@ class PantallaPrincipal(tk.Frame):
                     self.actualizar_grafica(self.fig1, self.canvas1)
                 if self.fig2:
                     self.actualizar_grafica(self.fig2, self.canvas2)
+
 
     def ajustar_modelo(self, col_x, col_y):
         data = pd.read_csv(self.ruta_archivo)
