@@ -4,6 +4,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import pandas as pd
 import matplotlib.pyplot as plt
 import statsmodels.api as sm
+from sklearn.metrics import mean_squared_error
 
 class PantallaPrincipal(tk.Frame):
     def __init__(self, parent, controller):
@@ -120,6 +121,16 @@ class PantallaPrincipal(tk.Frame):
         self.canvas2 = tk.Canvas(self, width=400, height=300, bg="white")
         self.canvas2.pack(padx=10, pady=10, side=tk.LEFT)
 
+        # Etiqueta para mostrar el RMSE
+        self.etiqueta_rmse = tk.Label(
+            self,
+            text="RMSE: ",
+            font=("Comfortaa", 12),
+            bg="light blue",
+            fg="black",
+        )
+        self.etiqueta_rmse.pack(side=tk.TOP, padx=10, pady=10, anchor=tk.W)
+
     def seleccionar_archivo(self):
         self.ruta_archivo = filedialog.askopenfilename()
         if self.ruta_archivo:
@@ -174,6 +185,9 @@ class PantallaPrincipal(tk.Frame):
                 if self.fig2:
                     self.actualizar_grafica(self.fig2, self.canvas2)
 
+                # Calcular y mostrar RMSE
+                rmse = self.calcular_rmse(self.col_x, self.col_y, modelo)
+                self.etiqueta_rmse.config(text=f'RMSE: {rmse:.4f}')  # Actualiza la etiqueta con el valor del RMSE
 
     def ajustar_modelo(self, col_x, col_y):
         data = pd.read_csv(self.ruta_archivo)
@@ -229,6 +243,20 @@ class PantallaPrincipal(tk.Frame):
         canvas = FigureCanvasTkAgg(fig, master=canvas)
         canvas.draw()
         canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+
+    def calcular_rmse(self, col_x, col_y, modelo):
+        data = pd.read_csv(self.ruta_archivo)
+
+        # Preparar datos para la predicción
+        X = sm.add_constant(data[col_x], prepend=True)
+        y_true = data[col_y]
+
+        # Predecir los valores
+        y_pred = modelo.predict(exog=X)
+
+        # Calcular el RMSE
+        rmse = mean_squared_error(y_true, y_pred, squared=False)
+        return rmse
 
 
 class Manager(tk.Tk):
