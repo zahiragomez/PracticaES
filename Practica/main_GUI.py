@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import statsmodels.api as sm
 from sklearn.metrics import mean_squared_error
 import numpy as np
+import funciones_auxiliares
 
 class PantallaPrincipal(tk.Frame):
     def __init__(self, parent, controller):
@@ -142,6 +143,31 @@ class PantallaPrincipal(tk.Frame):
             )   
             self.boton_modelo.grid(row=4, columnspan=3, pady=10, sticky=tk.NSEW)
 
+            # Botón Guardar Modelo 
+            self.boton_guardar = tk.Button(
+                self.frame_archivo_seleccionado,
+                text="Guardar",
+                command=self.guardar,
+                justify=tk.RIGHT,
+                font=("Comfortaa", 12),
+                bg="white",
+                fg="black",
+            )
+            self.boton_guardar.config(state='disabled')
+            self.boton_guardar.grid(row=5, columnspan=3, pady=10, sticky=tk.NSEW)
+            
+            # Botón Cargar Modelo 
+            self.boton_cargar = tk.Button(
+                self.frame_archivo_seleccionado,
+                text="Cargar",
+                command=self.cargar,
+                justify=tk.RIGHT,
+                font=("Comfortaa", 12),
+                bg="white",
+                fg="black",
+            )
+            self.boton_cargar.grid(row=6, columnspan=3, pady=10, sticky=tk.NSEW)
+
         except pd.errors.EmptyDataError:
             print("Error: El archivo está vacío")
         except pd.errors.ParserError:
@@ -149,23 +175,24 @@ class PantallaPrincipal(tk.Frame):
 
     def realizar_analisis(self):
         if self.col_x is not None and self.col_y is not None:
-            modelo = self.ajustar_modelo(self.col_x, self.col_y)
+            modelo = self.ajustar_modelo()
             if modelo:
+                self.boton_guardar.config(state='normal')
                 self.actualizar_recta_regresion(modelo)
 
                 # Calcular y mostrar RMSE
-                rmse = self.calcular_rmse(self.col_x, self.col_y, modelo)
+                self.rmse = self.calcular_rmse(modelo)
                 #self.etiqueta_rmse.config(text=f'RMSE: {rmse:.4f}')  # Actualiza la etiqueta con el valor del RMSE
 
-    def ajustar_modelo(self, col_x, col_y):
+    def ajustar_modelo(self):
         data = pd.read_csv(self.ruta_archivo)
 
         # Drop rows with any missing values in the specified columns
-        data.dropna(subset=[col_x, col_y], inplace=True)
+        data.dropna(subset=[self.col_x, self.col_y], inplace=True)
 
-        X = data[col_x]
+        X = data[self.col_x]
         X_i = sm.add_constant(X, prepend=True)
-        y = data[col_y]
+        y = data[self.col_y]
 
         modelo = sm.OLS(endog=y, exog=X_i).fit()
         return modelo
@@ -197,16 +224,30 @@ class PantallaPrincipal(tk.Frame):
         canvas.draw()
         canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
-    def calcular_rmse(self, col_x, col_y, modelo):
+    def calcular_rmse(self, modelo):
         data = pd.read_csv(self.ruta_archivo)
 
-        X = sm.add_constant(data[col_x], prepend=True)
-        y_true = data[col_y]
+        X = sm.add_constant(data[self.col_x], prepend=True)
+        y_true = data[self.col_y]
 
         y_pred = modelo.predict(exog=X)
 
         rmse = mean_squared_error(y_true, y_pred, squared=False)
         return rmse
+
+    def guardar(self):
+            ruta_archivo = filedialog.asksaveasfilename()
+            funciones_auxiliares.guardar(ruta_archivo, self.col_x, self.col_y, self.rmse)
+
+    def cargar(self):
+        ruta_archivo = filedialog.askopenfilename()
+        datos = funciones_auxiliares.cargar(ruta_archivo)
+
+        self.col_x = datos[0]
+        self.col_y = datos[1]
+        self.rmse = datos[2]
+        
+        self.realizar_analisis()
 
 
 class Manager(tk.Tk):

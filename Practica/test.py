@@ -1,5 +1,7 @@
 import unittest
 from funciones_auxiliares import importar_archivo
+from funciones_auxiliares import guardar
+from funciones_auxiliares import cargar
 import os
 import tkinter as tk
 from tkinter import filedialog
@@ -357,8 +359,17 @@ class TestFuncionesAuxiliares(unittest.TestCase):
 
         print("Todas las columnas, excepto 'ocean_proximity', están presentes.")
     
-        
-    
+    def test_guardar_cargar(self):
+        col_x = 'households'
+        col_y = 'latitude'
+        rmse = 2.130504926089326
+        ruta_archivo = 'test.txt'
+        guardar(ruta_archivo, col_x, col_y, rmse)
+        datos = cargar(ruta_archivo)
+
+        assert datos[0] == col_x
+        assert datos[1] == col_y
+        assert datos[2] == rmse  
 
 if __name__ == "__main__":
     unittest.main()
