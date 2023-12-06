@@ -1,4 +1,3 @@
-
 import tkinter as tk
 from tkinter import filedialog
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -6,6 +5,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import statsmodels.api as sm
 from sklearn.metrics import mean_squared_error
+import numpy as np
 
 class PantallaPrincipal(tk.Frame):
     def __init__(self, parent, controller):
@@ -88,9 +88,13 @@ class PantallaPrincipal(tk.Frame):
             self.etiqueta_y.config(text=f"Variable Y seleccionada: {self.col_y}")
 
     def actualizar_listas_columnas(self):
+
         try:
+
             df = pd.read_csv(self.ruta_archivo)
-            columnas = df.columns.tolist()
+        
+            # Filtrar columnas numéricas
+            columnas_numericas = df.select_dtypes(include=[np.number]).columns.tolist()
 
             # Crear la lista de columnas X
             self.listbox_x = tk.Listbox(self.frame_archivo_seleccionado)
@@ -102,7 +106,7 @@ class PantallaPrincipal(tk.Frame):
             self.listbox_y.bind("<<ListboxSelect>>", self.cambia_columna_y)
             self.listbox_y.grid(row=2, column=1, padx=(5, 10), pady=10, sticky=tk.W)
 
-            for columna in columnas:
+            for columna in columnas_numericas:
                 self.listbox_x.insert(tk.END, columna)
                 self.listbox_y.insert(tk.END, columna)
 
@@ -237,3 +241,6 @@ class Manager(tk.Tk):
 if __name__ == "__main__":
     app = Manager()
     app.mainloop()
+
+
+        
