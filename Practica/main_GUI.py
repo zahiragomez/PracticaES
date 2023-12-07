@@ -1,11 +1,8 @@
 import tkinter as tk
 from tkinter import filedialog
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-import pandas as pd
-import matplotlib.pyplot as plt
-import statsmodels.api as sm
-from sklearn.metrics import mean_squared_error
-import numpy as np
+from seleccion_columna import seleccionar_archivo, cargar_datos, obtener_columnas_numericas
+from analisis_modelo import ajustar_modelo, actualizar_recta_regresion, calcular_rmse
 import funciones_auxiliares
 
 class PantallaPrincipal(tk.Frame):
@@ -71,7 +68,7 @@ class PantallaPrincipal(tk.Frame):
         self.etiqueta_y = None
 
     def seleccionar_archivo(self):
-        self.ruta_archivo = filedialog.askopenfilename()
+        self.ruta_archivo = seleccionar_archivo()
         if self.ruta_archivo:
             self.ruta_seleccionada.set(
                 f"Ruta del archivo seleccionado: {self.ruta_archivo}"
@@ -89,13 +86,15 @@ class PantallaPrincipal(tk.Frame):
             self.etiqueta_y.config(text=f"Variable Y seleccionada: {self.col_y}")
 
     def actualizar_listas_columnas(self):
+        df = cargar_datos(self.ruta_archivo)
+        if df is not None:
+            columnas_numericas = obtener_columnas_numericas(df)
 
-        try:
-
-            df = pd.read_csv(self.ruta_archivo)
-        
-            # Filtrar columnas numéricas
-            columnas_numericas = df.select_dtypes(include=[np.number]).columns.tolist()
+            # Limpiar listas de selección
+            if self.listbox_x is not None:
+                self.listbox_x.destroy()
+            if self.listbox_y is not None:
+                self.listbox_y.destroy()
 
             # Crear la lista de columnas X
             self.listbox_x = tk.Listbox(self.frame_archivo_seleccionado)
@@ -156,7 +155,7 @@ class PantallaPrincipal(tk.Frame):
             self.boton_guardar.config(state='disabled')
             self.boton_guardar.grid(row=5, columnspan=3, pady=10, sticky=tk.NSEW)
             
-            # Botón Cargar Modelo 
+            # Botón Cargar Modelo 
             self.boton_cargar = tk.Button(
                 self.frame_archivo_seleccionado,
                 text="Cargar",
@@ -168,73 +167,22 @@ class PantallaPrincipal(tk.Frame):
             )
             self.boton_cargar.grid(row=6, columnspan=3, pady=10, sticky=tk.NSEW)
 
-        except pd.errors.EmptyDataError:
-            print("Error: El archivo está vacío")
-        except pd.errors.ParserError:
-            print("Error: Error al analizar el archivo CSV")
-
+            
     def realizar_analisis(self):
         if self.col_x is not None and self.col_y is not None:
-            modelo = self.ajustar_modelo()
+            modelo = ajustar_modelo(self.ruta_archivo, self.col_x, self.col_y)
+
             if modelo:
+                if self.canvas_regresion is None:
+                    self.canvas_regresion = tk.Canvas(self.frame_archivo_seleccionado)
+                    self.canvas_regresion.grid(row=7, column=0, columnspan=3, pady=10, sticky=tk.NSEW)
+
                 self.boton_guardar.config(state='normal')
-                self.actualizar_recta_regresion(modelo)
+                actualizar_recta_regresion(modelo, self.ruta_archivo, self.col_x, self.col_y, self.canvas_regresion)
 
                 # Calcular y mostrar RMSE
-                self.rmse = self.calcular_rmse(modelo)
-                #self.etiqueta_rmse.config(text=f'RMSE: {rmse:.4f}')  # Actualiza la etiqueta con el valor del RMSE
-
-    def ajustar_modelo(self):
-        data = pd.read_csv(self.ruta_archivo)
-
-        # Drop rows with any missing values in the specified columns
-        data.dropna(subset=[self.col_x, self.col_y], inplace=True)
-
-        X = data[self.col_x]
-        X_i = sm.add_constant(X, prepend=True)
-        y = data[self.col_y]
-
-        modelo = sm.OLS(endog=y, exog=X_i).fit()
-        return modelo
-
-
-    def actualizar_recta_regresion(self, modelo):
-        data = pd.read_csv(self.ruta_archivo)
-        
-        fig, ax = plt.subplots(figsize=(8, 6))
-        scatter = ax.scatter(
-            x=data[self.col_x],
-            y=data[self.col_y],
-            c="#FFA500",
-            label="Datos de dispersión",
-            marker="o",
-        )
-        ax.set_title(f'Distribución de {self.col_x} y {self.col_y}')
-        ax.set_xlabel('Eje X')
-        ax.set_ylabel('Eje Y')
-        ax.legend(handles=[scatter], loc='upper right')
-        ax.plot(data[self.col_x], modelo.predict(exog=sm.add_constant(data[self.col_x], prepend=True)), linestyle='-', color='blue', label="OLS", linewidth=2)
-        ci = modelo.get_prediction(exog=sm.add_constant(data[self.col_x], prepend=True)).summary_frame(alpha=0.05)
-        ax.fill_between(data[self.col_x], ci["mean_ci_lower"], ci["mean_ci_upper"], color='orange', alpha=0.1, label='95% CI')
-        
-        self.canvas_regresion = tk.Canvas(self, width=400, height=300, bg="white")
-        self.canvas_regresion.pack(padx=10, pady=10)
-        
-        canvas = FigureCanvasTkAgg(fig, master=self.canvas_regresion)
-        canvas.draw()
-        canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-
-    def calcular_rmse(self, modelo):
-        data = pd.read_csv(self.ruta_archivo)
-
-        X = sm.add_constant(data[self.col_x], prepend=True)
-        y_true = data[self.col_y]
-
-        y_pred = modelo.predict(exog=X)
-
-        rmse = mean_squared_error(y_true, y_pred, squared=False)
-        return rmse
-
+                self.rmse = calcular_rmse(modelo, self.ruta_archivo, self.col_x, self.col_y)
+    
     def guardar(self):
             ruta_archivo = filedialog.asksaveasfilename()
             funciones_auxiliares.guardar(ruta_archivo, self.col_x, self.col_y, self.rmse)
@@ -248,6 +196,7 @@ class PantallaPrincipal(tk.Frame):
         self.rmse = datos[2]
         
         self.realizar_analisis()
+
 
 
 class Manager(tk.Tk):
