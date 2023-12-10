@@ -1,26 +1,43 @@
 import pandas as pd
 import sqlite3
 
-def importar_archivo(ruta_archivo):
-    # Obtener la extensión del archivo
-    extension = ruta_archivo.split(".")[-1].lower()
-    
-    if extension == "csv":
+import tkinter as tk
+from tkinter import filedialog
+import pandas as pd
+import numpy as np
+
+def importar_archivo():
+    ruta_archivo = filedialog.askopenfilename()
+    return ruta_archivo
+
+def cargar_datos(ruta_archivo):
+    try:
+        # Intenta cargar como CSV
         df = pd.read_csv(ruta_archivo)
-        print("El archivo CSV se ha importado correctamente.")
-    elif extension == "xlsx" or extension == "xls":
-        df = pd.read_excel(ruta_archivo)
-        print("El archivo Excel se ha importado correctamente.")
-    elif extension == "db":
-        conn = sqlite3.connect(ruta_archivo)
-        df = pd.read_sql_query("SELECT * FROM california_housing_dataset", conn)
-        conn.close()
-        print("La base de datos se ha importado correctamente.")
-    else:
-        print("Extensión de archivo no compatible.")
+        return df
+    except pd.errors.EmptyDataError:
+        print("Error: El archivo está vacío")
         return None
-    
-    return df
+    except pd.errors.ParserError:
+        print("Error: Error al analizar el archivo CSV")
+        return None
+    except Exception as e:
+        # Si no es un archivo CSV, intenta cargar como Excel
+        try:
+            df = pd.read_excel(ruta_archivo)
+            return df
+        except pd.errors.EmptyDataError:
+            print("Error: El archivo está vacío")
+            return None
+        except pd.errors.ParserError:
+            print("Error: Error al analizar el archivo Excel")
+            return None
+        except Exception as e:
+            print(f"Error: No se pudo cargar el archivo. Detalles: {str(e)}")
+            return None
+
+def obtener_columnas_numericas(df):
+    return df.select_dtypes(include=[np.number]).columns.tolist()
 
 def asociar_valores(ruta_archivo):
     # Lee el archivo dependiendo de la extensión

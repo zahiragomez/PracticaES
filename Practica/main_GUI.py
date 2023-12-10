@@ -132,64 +132,60 @@ class PantallaPrincipal(tk.Frame):
 
             # Botón Crear Modelo
             self.boton_modelo = tk.Button(
-                                        self.frame_archivo_seleccionado,
-                                        text="Crear Modelo",
-                                        command=self.realizar_analisis,
-                                        justify=tk.RIGHT,
-                                        font=("Comfortaa", 12),
-                                        bg="white",
-                                        fg="black",
-                                        )
-            self.boton_modelo.grid(row=4, column=1, pady=(0, 10), padx=5, sticky=tk.E)  # Ajusté el padding y el sticky
+                self.frame_archivo_seleccionado,
+                text="Crear Modelo",
+                command=self.realizar_analisis,
+                justify=tk.RIGHT,
+                font=("Comfortaa", 12),
+                bg="white",
+                fg="black",
+            )
+            self.boton_modelo.grid(row=4, column=1, pady=(0, 10), padx=5, sticky=tk.E)
 
-            # Botón Guardar Modelo 
-        self.boton_guardar = tk.Button(
-                                        self.frame_archivo_seleccionado,
-                                        text="Guardar",
-                                        command=self.guardar,
-                                        justify=tk.RIGHT,
-                                        font=("Comfortaa", 12),
-                                        bg="white",
-                                        fg="black",
-                                        )
-        self.boton_guardar.config(state='disabled')
-        self.boton_guardar.grid(row=4, column=2, pady=(0, 10), padx=5, sticky=tk.W)  # Ajusté el padding y el sticky
+            # Botón Guardar Modelo
+            self.boton_guardar = tk.Button(
+                self.frame_archivo_seleccionado,
+                text="Guardar",
+                command=self.guardar,
+                justify=tk.RIGHT,
+                font=("Comfortaa", 12),
+                bg="white",
+                fg="black",
+            )
+            self.boton_guardar.config(state='disabled')
+            self.boton_guardar.grid(row=4, column=2, pady=(0, 10), padx=5, sticky=tk.W)
 
-        # Botón Cargar Modelo 
-        self.boton_cargar = tk.Button(
-                                        self.frame_archivo_seleccionado,
-                                        text="Cargar",
-                                        command=self.cargar,
-                                        justify=tk.RIGHT,
-                                        font=("Comfortaa", 12),
-                                        bg="white",
-                                        fg="black",
-                                        )
-        self.boton_cargar.grid(row=4, column=3, pady=(0, 10), padx=5, sticky=tk.W)  # Ajusté el padding y el sticky
+            # Botón Cargar Modelo
+            self.boton_cargar = tk.Button(
+                self.frame_archivo_seleccionado,
+                text="Cargar",
+                command=self.cargar,
+                justify=tk.RIGHT,
+                font=("Comfortaa", 12),
+                bg="white",
+                fg="black",
+            )
+            self.boton_cargar.grid(row=4, column=3, pady=(0, 10), padx=5, sticky=tk.W)
 
-
-            
     def realizar_analisis(self):
         if self.col_x is not None and self.col_y is not None:
-        # Crear un nuevo modelo cada vez que se clique el botón
-             modelo = ajustar_modelo(self.ruta_archivo, self.col_x, self.col_y)
+            modelo = ajustar_modelo(self.ruta_archivo, self.col_x, self.col_y)
 
-             if modelo:
-                # Si hay un canvas existente, eliminarlo
+            if modelo:
                 if self.canvas_regresion:
                     self.canvas_regresion.destroy()
 
-             self.canvas_regresion = tk.Canvas(self.frame_archivo_seleccionado)
-             self.canvas_regresion.grid(row=7, column=0, columnspan=3, pady=10, sticky=tk.NSEW)
+                self.canvas_regresion = tk.Canvas(self.frame_archivo_seleccionado)
+                self.canvas_regresion.grid(row=7, column=0, columnspan=3, pady=10, sticky=tk.NSEW)
 
-             self.boton_guardar.config(state='normal')
-             actualizar_recta_regresion(modelo, self.ruta_archivo, self.col_x, self.col_y, self.canvas_regresion)
+                self.boton_guardar.config(state='normal')
+                actualizar_recta_regresion(modelo, self.ruta_archivo, self.col_x, self.col_y, self.canvas_regresion)
 
-             self.rmse = calcular_rmse(modelo, self.ruta_archivo, self.col_x, self.col_y)
+                self.rmse = calcular_rmse(modelo, self.ruta_archivo, self.col_x, self.col_y)
 
     def guardar(self):
-            ruta_archivo = filedialog.asksaveasfilename()
-            funciones_auxiliares.guardar(ruta_archivo, self.col_x, self.col_y, self.rmse)
+        ruta_archivo = filedialog.asksaveasfilename()
+        funciones_auxiliares.guardar(ruta_archivo, self.col_x, self.col_y, self.rmse)
 
     def cargar(self):
         ruta_archivo = filedialog.askopenfilename()
@@ -198,9 +194,8 @@ class PantallaPrincipal(tk.Frame):
         self.col_x = datos[0]
         self.col_y = datos[1]
         self.rmse = datos[2]
-        
-        self.realizar_analisis()
 
+        self.realizar_analisis()
 
 
 class Manager(tk.Tk):
@@ -235,6 +230,3 @@ class Manager(tk.Tk):
 if __name__ == "__main__":
     app = Manager()
     app.mainloop()
-
-
-        

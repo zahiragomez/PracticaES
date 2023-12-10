@@ -4,9 +4,11 @@ from sklearn.metrics import mean_squared_error
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import tkinter as tk
+from seleccion_columna import cargar_datos
 
 def ajustar_modelo(ruta_archivo, col_x, col_y):
-    data = pd.read_csv(ruta_archivo)
+    # Utilizar la función cargar_datos del módulo seleccion_columna para cargar el archivo
+    data = cargar_datos(ruta_archivo)
 
     # Drop rows with any missing values in the specified columns
     data.dropna(subset=[col_x, col_y], inplace=True)
@@ -19,7 +21,8 @@ def ajustar_modelo(ruta_archivo, col_x, col_y):
     return modelo
 
 def actualizar_recta_regresion(modelo, ruta_archivo, col_x, col_y, canvas_regresion):
-    data = pd.read_csv(ruta_archivo)
+    # Utilizar la función cargar_datos del módulo seleccion_columna para cargar el archivo
+    data = cargar_datos(ruta_archivo)
 
     fig, ax = plt.subplots(figsize=(8, 6))
     scatter = ax.scatter(
@@ -44,7 +47,8 @@ def actualizar_recta_regresion(modelo, ruta_archivo, col_x, col_y, canvas_regres
 
 
 def calcular_rmse(modelo, ruta_archivo, col_x, col_y):
-    data = pd.read_csv(ruta_archivo)
+    # Utilizar la función cargar_datos del módulo seleccion_columna para cargar el archivo
+    data = cargar_datos(ruta_archivo)
 
     X = sm.add_constant(data[col_x], prepend=True)
     y_true = data[col_y]
