@@ -34,5 +34,6 @@ def cargar_datos(ruta_archivo):
     except Exception as e:
         print(f"Error: No se pudo cargar el archivo. Detalles: {str(e)}")
         return None
+    
 def obtener_columnas_numericas(df):
     return df.select_dtypes(include=[np.number]).columns.tolist()

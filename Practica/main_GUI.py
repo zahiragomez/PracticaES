@@ -75,12 +75,12 @@ class PantallaPrincipal(tk.Frame):
             )
             self.actualizar_listas_columnas()
 
-    def cambia_columna_x(self, event):
+    def cambia_columna_x(self):
         if self.listbox_x.curselection():
             self.col_x = self.listbox_x.get(self.listbox_x.curselection())
             self.etiqueta_x.config(text=f"Variable X seleccionada: {self.col_x}")
 
-    def cambia_columna_y(self, event):
+    def cambia_columna_y(self):
         if self.listbox_y.curselection():
             self.col_y = self.listbox_y.get(self.listbox_y.curselection())
             self.etiqueta_y.config(text=f"Variable Y seleccionada: {self.col_y}")
