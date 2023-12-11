@@ -1,4 +1,3 @@
-import pandas as pd
 import statsmodels.api as sm
 from sklearn.metrics import mean_squared_error
 import matplotlib.pyplot as plt

@@ -14,6 +14,10 @@ import  os
 from seleccion_columna import obtener_columnas_numericas 
 from seleccion_columna import seleccionar_archivo
 from seleccion_columna import cargar_datos
+from analisis_modelo import ajustar_modelo
+from analisis_modelo import actualizar_recta_regresion
+from analisis_modelo import calcular_rmse
+from analisis_modelo import calcular_bondad
 
 #PARA LA CREACIÓN DE MODELOS
 # Tratamiento de datos
@@ -304,10 +308,44 @@ class TestFuncionesAuxiliares(unittest.TestCase):
         return df
     
     def test_seleccionar_columna(self):
+        columnas_finales = ["longitude","latitude","housing_median_age","total_rooms","total_bedrooms","population","households","median_income","median_house_value"]
+
         ruta_archivo = seleccionar_archivo() 
         df = cargar_datos(ruta_archivo)
         columnas = obtener_columnas_numericas(df)
-        print(columnas)
+
+        assert columnas_finales == columnas 
+
+    def test_calcular_rmse(self):
+        ruta_archivo = seleccionar_archivo()
+        col_x = 'longitude'
+        col_y = 'latitude'
+
+        modelo = ajustar_modelo(ruta_archivo, col_x, col_y)
+
+        rmse = calcular_rmse(modelo, ruta_archivo, col_x, col_y)
+
+        # Comprueba que el RMSE es un número flotante 
+        self.assertIsInstance(rmse, float)
+
+        # Comprueba que el RMSE es mayor o igual a cero
+        self.assertGreaterEqual(rmse, 0.0)
+
+    def test_calcular_bondad(self):
+        ruta_archivo = seleccionar_archivo()
+        col_x = 'longitude'
+        col_y = 'latitude'
+
+        modelo = ajustar_modelo(ruta_archivo, col_x, col_y)
+
+        bondad = calcular_bondad(modelo, ruta_archivo, col_x, col_y)
+
+        # Comprueba que la bondad es un número flotante 
+        self.assertIsInstance(bondad, float)
+
+        # Comprueba que la bondad de ajuste está en el rango [0, 1]
+        self.assertGreaterEqual(bondad, 0.0)
+        self.assertLessEqual(bondad, 1.0)
 
     def test_guardar_cargar(self):
         col_x = 'households'
