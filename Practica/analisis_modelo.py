@@ -57,3 +57,18 @@ def calcular_rmse(modelo, ruta_archivo, col_x, col_y):
 
     rmse = mean_squared_error(y_true, y_pred, squared=False)
     return rmse
+
+def calcular_bondad(modelo, ruta_archivo, col_x, col_y):
+    # Utilizar la función cargar_datos del módulo seleccion_columna para cargar el archivo
+    data = cargar_datos(ruta_archivo)
+
+    X = sm.add_constant(data[col_x], prepend=True)
+    y_true = data[col_y]
+
+    y_pred = modelo.predict(exog=X)
+
+    ssr = ((y_true - y_pred) ** 2).sum()
+    sst = ((y_true - y_true.mean()) ** 2).sum()
+
+    r_cuadrado = 1 - (ssr / sst)
+    return r_cuadrado

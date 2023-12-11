@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import filedialog
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from seleccion_columna import seleccionar_archivo, cargar_datos, obtener_columnas_numericas
-from analisis_modelo import ajustar_modelo, actualizar_recta_regresion, calcular_rmse
+from analisis_modelo import ajustar_modelo, actualizar_recta_regresion, calcular_rmse, calcular_bondad
 import funciones_auxiliares
 
 class PantallaPrincipal(tk.Frame):
@@ -167,6 +167,26 @@ class PantallaPrincipal(tk.Frame):
             )
             self.boton_cargar.grid(row=4, column=3, pady=(0, 10), padx=5, sticky=tk.W)
 
+            # Etiqueta para mostrar el RMSE
+            self.etiqueta_rmse = tk.Label(
+                self.frame_archivo_seleccionado,
+                text="RMSE: ",
+                font=("Comfortaa", 12),
+                bg="light blue",
+                fg="black",
+            )
+            self.etiqueta_rmse.grid(row=5, column=0, columnspan=2, pady=(0, 10), padx=5, sticky=tk.W)
+
+            # Etiqueta para mostrar el R^2
+            self.etiqueta_r2 = tk.Label(
+                self.frame_archivo_seleccionado,
+                text="Coeficiente de determinación (R^2): ",
+                font=("Comfortaa", 12),
+                bg="light blue",
+                fg="black",
+            )
+            self.etiqueta_r2.grid(row=6, column=0, columnspan=2, pady=(0, 10), padx=5, sticky=tk.W)
+
     def realizar_analisis(self):
         if self.col_x is not None and self.col_y is not None:
             modelo = ajustar_modelo(self.ruta_archivo, self.col_x, self.col_y)
@@ -182,6 +202,14 @@ class PantallaPrincipal(tk.Frame):
                 actualizar_recta_regresion(modelo, self.ruta_archivo, self.col_x, self.col_y, self.canvas_regresion)
 
                 self.rmse = calcular_rmse(modelo, self.ruta_archivo, self.col_x, self.col_y)
+
+                self.bondad = calcular_bondad(modelo, self.ruta_archivo, self.col_x, self.col_y)
+
+                # Actualizar la etiqueta del RMSE
+                self.etiqueta_rmse.config(text=f"RMSE: {self.rmse:.4f}")
+
+                # Actualizar la etiqueta del R^2
+                self.etiqueta_r2.config(text=f"Coeficiente de determinación (R^2): {self.bondad:.4f}")
 
     def guardar(self):
         ruta_archivo = filedialog.asksaveasfilename()
