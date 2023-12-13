@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import filedialog
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from seleccion_columna import seleccionar_archivo, cargar_datos, obtener_columnas_numericas
 from analisis_modelo import ajustar_modelo, actualizar_recta_regresion, calcular_rmse, calcular_bondad
 import funciones_auxiliares
