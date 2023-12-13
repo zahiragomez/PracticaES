@@ -1,7 +1,7 @@
-import tkinter as tk
 from tkinter import filedialog
 import pandas as pd
 import numpy as np
+import sqlite3
 import os
 
 def seleccionar_archivo():
@@ -19,6 +19,12 @@ def cargar_datos(ruta_archivo):
         elif extension == ".xlsx":
             # Si la extensión es XLSX, intenta cargar como Excel con el motor openpyxl
             df = pd.read_excel(ruta_archivo, engine='openpyxl')
+
+        elif extension == ".db":
+           conn = sqlite3.connect(ruta_archivo)
+           df = pd.read_sql_query("SELECT * FROM california_housing_dataset", conn)
+           conn.close
+
         else:
             # Si la extensión no es reconocida, muestra un mensaje de error
             print(f"Error: Extensión de archivo no compatible: {extension}")
