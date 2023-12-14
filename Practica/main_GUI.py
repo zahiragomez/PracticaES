@@ -153,7 +153,7 @@ class PantallaPrincipal(tk.Frame):
             )
             self.boton_guardar.config(state='disabled')
             self.boton_guardar.grid(row=4, column=2, pady=(0, 10), padx=5, sticky=tk.W)
-
+            
             # Botón Cargar Modelo
             self.boton_cargar = tk.Button(
                 self.frame_archivo_seleccionado,

@@ -1,45 +1,19 @@
 import unittest
-from funciones_auxiliares import importar_archivo
-from funciones_auxiliares import guardar
-from funciones_auxiliares import cargar
-import os
 import tkinter as tk
-from tkinter import filedialog
+import pandas as pd
 import sqlite3
-import shutil
 import pickle
 import matplotlib.pyplot as plt
+from matplotlib import style
 import statsmodels.api as sm
 import  os
-from seleccion_columna import obtener_columnas_numericas 
-from seleccion_columna import seleccionar_archivo
-from seleccion_columna import cargar_datos
-from analisis_modelo import ajustar_modelo
-from analisis_modelo import actualizar_recta_regresion
-from analisis_modelo import calcular_rmse
-from analisis_modelo import calcular_bondad
-
-#PARA LA CREACIÓN DE MODELOS
-# Tratamiento de datos
-# ==============================================================================
-import pandas as pd
-import numpy as np
-
-# Gráficos
-# ==============================================================================
-import matplotlib.pyplot as plt
-from matplotlib import style
-import seaborn as sns
-
-# Preprocesado y modelado
-# ==============================================================================
 from scipy.stats import pearsonr
-from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import r2_score
 from sklearn.metrics import mean_squared_error
 import statsmodels.api as sm
-import statsmodels.formula.api as smf
+from funciones_auxiliares import guardar, cargar
+from seleccion_columna import obtener_columnas_numericas, seleccionar_archivo, cargar_datos
+from analisis_modelo import ajustar_modelo, calcular_rmse, calcular_bondad
 
 # Configuración matplotlib
 # ==============================================================================
@@ -54,51 +28,6 @@ import warnings
 warnings.filterwarnings('ignore')
 
 class TestFuncionesAuxiliares(unittest.TestCase):
-
-    def test_importar_archivo(self): 
-        # Ruta al archivo de prueba 
-        archivo_prueba = "/Users/lidiacaneiropardo/Desktop/PracticaES/Practica/archivos/housing.xlsx"
-        archtemp = "/Users/lidiacaneiropardo/Desktop/PracticaES/Practica/archivos/temporal.xlsx"
-        extension = archivo_prueba.split(".")[-1].lower()
-        
-        shutil.copy(archivo_prueba, archtemp)
-
-        try:
-            # Prueba para importar un archivo Excel
-            resultado = importar_archivo(archtemp)
-
-            # Verifica que el resultado no sea nulo
-            self.assertIsNotNone(resultado)
-
-            # Convierte el contenido original en un DataFrame directamente
-            if extension == "csv":
-                df_original = pd.read_csv(archtemp)
-            elif extension == "xlsx" or extension == "xls":
-                df_original = pd.read_excel(archtemp)
-            elif extension == "db":
-                conn = sqlite3.connect(archtemp)
-                df_original = pd.read_sql_query("SELECT * FROM california_housing_dataset", conn)
-                conn.close()
-
-            # Compara los DataFrames
-            self.assertTrue(df_original.equals(resultado))
-        except Exception as e:
-                self.fail(f"La prueba falló debido a la excepción: {str(e)}")
-
-        finally: 
-            # Borra el archivo temporal
-            if os.path.exists(archtemp):
-                os.remove(archtemp)
-
-    def test_seleccionar_columna(self): 
-        df = importar_archivo("/Users/lidiacaneiropardo/Desktop/archivos/housing.xlsx")
-
-        # Escogemos una columna 
-        col_original  = df.iloc[:, 0]
-
-        self.assertEqual(len(col_original), 20640)
-        self.assertEqual(col_original.min(), -124.35)
-        self.assertEqual(col_original.max(), -114.31)
 
     def test_interfaz(self):
         #crea el objeto ventana
@@ -280,32 +209,27 @@ class TestFuncionesAuxiliares(unittest.TestCase):
         print("")
         print(f"El error (rmse) de test es: {rmse}")
 
-    def test_importar_csv_2_0(self):
-        #Comando para que la GUI busque el archivo
-        ruta_csv = filedialog.askopenfilename()
-        df_csv = pd.read_csv(ruta_csv)
-        print("El archivo csv se ha importado de forma correcta")
-        return df_csv
-    
-    def test_importar_excel_2_0(self):
-        ruta_excel = filedialog.askopenfilename()
-        df = pd.read_excel(ruta_excel)
-        print("El archivo excel se ha importado de forma correcta")
-        return df
-        
-    def test_importar_db_2_0(self):
-        
-        #Comando para que la GUI busque el archivo
-        ruta_db = filedialog.askopenfilename() 
-    
-        # Crear una conexión a la base de datos
-        conn = sqlite3.connect(ruta_db)
+    def test_seleccionar_archivo(self):
+        ruta_archivo = seleccionar_archivo()
+        if ruta_archivo is not None: 
+            print("El archivo se ha importado de forma correcta")
 
-        # Leer los datos de la base de datos
-        df = pd.read_sql_query("SELECT * FROM california_housing_dataset", conn)
-        conn.close()
+    def test_cargar_datos(self): 
+        ruta_archivo = seleccionar_archivo()
+        df = cargar_datos(ruta_archivo)
+        extension = os.path.splitext(ruta_archivo)[1].lower()
 
-        return df
+        if extension == ".csv":
+            df_csv = pd.read_csv(ruta_archivo)
+            assert df.equals(df_csv)
+        elif extension == ".xlsx":
+            df_xlsx = pd.read_excel(ruta_archivo, engine='openpyxl')
+            assert df.equals(df_xlsx)
+        elif extension == ".db":
+           conn = sqlite3.connect(ruta_archivo)
+           df_db = pd.read_sql_query("SELECT * FROM california_housing_dataset", conn)
+           conn.close
+           assert df.equals(df_db)
     
     def test_seleccionar_columna(self):
         columnas_finales = ["longitude","latitude","housing_median_age","total_rooms","total_bedrooms","population","households","median_income","median_house_value"]
