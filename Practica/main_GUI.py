@@ -195,7 +195,8 @@ class PantallaPrincipal(tk.Frame):
                     self.canvas_regresion.destroy()
 
                 self.canvas_regresion = tk.Canvas(self.frame_archivo_seleccionado)
-                self.canvas_regresion.grid(row=7, column=0, columnspan=3, pady=10, sticky=tk.NSEW)
+
+                self.canvas_regresion.grid(row=2, column=0, columnspan=3, pady=20, sticky=tk.NSEW)
 
                 self.boton_guardar.config(state='normal')
                 actualizar_recta_regresion(modelo, self.ruta_archivo, self.col_x, self.col_y, self.canvas_regresion)
