@@ -35,7 +35,7 @@ class PantallaPrincipal(tk.Frame):
             bg="white",
             fg="black",
         )
-        self.indicaciones_label.grid(row=0, columnspan=2, padx=(10, 10), pady=10, sticky=tk.W)
+        self.indicaciones_label.grid(row=0, columnspan=3, padx=(10, 10), pady=10, sticky=tk.W)
 
         # Ruta del archivo
         self.ruta_label = tk.Label(
@@ -46,7 +46,7 @@ class PantallaPrincipal(tk.Frame):
             bg="white",
             fg="black",
         )
-        self.ruta_label.grid(row=1, columnspan=2, padx=(10, 10), pady=10, sticky=tk.W)
+        self.ruta_label.grid(row=1, columnspan=3, padx=(10, 10), pady=10, sticky=tk.W)
 
         # Botón Examinar
         self.boton_examinar = tk.Button(
@@ -58,7 +58,20 @@ class PantallaPrincipal(tk.Frame):
             bg="white",
             fg="black",
         )
-        self.boton_examinar.grid(row=1, column=2, padx=(10, 10), pady=10, sticky=tk.W)
+        self.boton_examinar.grid(row=1, column=3, padx=(10, 10), pady=10, sticky=tk.W)
+
+        # Botón Cargar
+        self.boton_cargar = tk.Button(
+            self.frame_archivo_seleccionado,
+            text="Cargar",
+            command=self.cargar,
+            justify=tk.RIGHT,
+            font=("Comfortaa", 12),
+            bg="white",
+            fg="black",
+        )
+        self.boton_cargar.grid(row=1, column=4, padx=(10, 10), pady=10, sticky=tk.W)
+
 
         # Listas de selección de columnas (se crean vacías inicialmente)
         self.listbox_x = None
@@ -154,18 +167,7 @@ class PantallaPrincipal(tk.Frame):
             self.boton_guardar.config(state='disabled')
             self.boton_guardar.grid(row=4, column=2, pady=(0, 10), padx=5, sticky=tk.W)
             
-            # Botón Cargar Modelo
-            self.boton_cargar = tk.Button(
-                self.frame_archivo_seleccionado,
-                text="Cargar",
-                command=self.cargar,
-                justify=tk.RIGHT,
-                font=("Comfortaa", 12),
-                bg="white",
-                fg="black",
-            )
-            self.boton_cargar.grid(row=4, column=3, pady=(0, 10), padx=5, sticky=tk.W)
-
+            
             # Etiqueta para mostrar el RMSE
             self.etiqueta_rmse = tk.Label(
                 self.frame_archivo_seleccionado,
