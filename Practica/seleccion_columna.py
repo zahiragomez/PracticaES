@@ -4,7 +4,7 @@ import numpy as np
 import sqlite3
 import os
 
-def seleccionar_archivo():
+def ruta():
     ruta_archivo = filedialog.askopenfilename()
     return ruta_archivo
 
