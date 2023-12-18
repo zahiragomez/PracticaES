@@ -2,7 +2,6 @@ import unittest
 import tkinter as tk
 import pandas as pd
 import sqlite3
-import pickle
 import matplotlib.pyplot as plt
 from matplotlib import style
 import statsmodels.api as sm
@@ -12,8 +11,9 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
 import statsmodels.api as sm
 from funciones_auxiliares import guardar, cargar
-from seleccion_columna import obtener_columnas_numericas, seleccionar_archivo, cargar_datos
-from analisis_modelo import ajustar_modelo, calcular_rmse, calcular_bondad
+from seleccion_columna import ruta, cargar_datos
+from analisis_modelo import ajustar_modelo, calcular_rmse
+
 
 # Configuración matplotlib
 # ==============================================================================
@@ -30,6 +30,16 @@ warnings.filterwarnings('ignore')
 class TestFuncionesAuxiliares(unittest.TestCase):
 
     def test_interfaz(self):
+        
+     
+
+        print ("Test GUI")
+        ruta_archivo = ruta()
+        df = cargar_datos(ruta_archivo)
+
+        #va a mostrar la primera columna del archivo
+        primera_columna= df.columns[0]
+
         #crea el objeto ventana
         ventana_prueba = tk.Tk() 
 
@@ -49,7 +59,7 @@ class TestFuncionesAuxiliares(unittest.TestCase):
             ventana_prueba,
 
             #texto dentro del botón
-            text= "Generar modelo",
+            text= primera_columna,
 
             #fuente del texto
             font = ("Comfortaa", 15),
@@ -96,154 +106,106 @@ class TestFuncionesAuxiliares(unittest.TestCase):
         #para que salga la ventana
         ventana_prueba.mainloop()
     
-    def load_and_check_files(model_file="modelo.pkl", data_file="datos.csv"):
-    # Cargar el modelo desde el archivo binario
-        with open(model_file, "rb") as f:
-            loaded_model = pickle.load(f)
-
-        # Mostrar el resumen del modelo cargado
-        print("Resumen del modelo cargado:")
-        print(loaded_model.summary())
-
-        # Cargar los datos desde el archivo CSV
-        loaded_data = pd.read_csv(data_file)
-
-        # Mostrar las primeras filas de los datos cargados
-        print("\nPrimeras filas de los datos cargados:")
-        print(loaded_data.head())
-
-        # Eliminar los archivos después de cargarlos y mostrar información
-        try:
-            os.remove(model_file)
-            os.remove(data_file)
-            print(f"\nArchivos '{model_file}' y '{data_file}' eliminados correctamente.")
-        except FileNotFoundError:
-            print("Los archivos no se encontraron. No se eliminaron.")
 
     def test_modelos(self):
-        
-        #Datos random para el test
-        equipos = ["Texas","Boston","Detroit","Kansas","St.","New_S.","New_Y.",
-                   "Milwaukee","Colorado","Houston","Baltimore","Los_An.","Chicago",
-                   "Cincinnati","Los_P.","Philadelphia","Chicago","Cleveland","Arizona",
-                   "Toronto","Minnesota","Florida","Pittsburgh","Oakland","Tampa",
-                   "Atlanta","Washington","San.F","San.I","Seattle"]
-        bateos = [5659,  5710, 5563, 5672, 5532, 5600, 5518, 5447, 5544, 5598,
-                  5585, 5436, 5549, 5612, 5513, 5579, 5502, 5509, 5421, 5559,
-                  5487, 5508, 5421, 5452, 5436, 5528, 5441, 5486, 5417, 5421]
+        print("Test modelos")
 
-        runs = [855, 875, 787, 730, 762, 718, 867, 721, 735, 615, 708, 644, 654, 735,
-                667, 713, 654, 704, 731, 743, 619, 625, 610, 645, 707, 641, 624, 570,
-                593, 556]
+        ruta_archivo = ruta()
+        df = cargar_datos(ruta_archivo)
 
-        datos = pd.DataFrame({'equipos': equipos, 'bateos': bateos, 'runs': runs})
+        # Verificar que hay al menos dos columnas en el conjunto de datos
+        if len(df.columns) < 2:
+            raise ValueError("El conjunto de datos debe contener al menos dos columnas para el análisis")
 
+        # Seleccionar las dos primeras columnas automáticamente
+        col_x, col_y = df.columns[:2]
+
+        datos = pd.DataFrame({col_x: df[col_x], col_y: df[col_y]})
 
         # Gráfico
         fig, ax = plt.subplots(figsize=(6, 3.84))
-
-        datos.plot(
-                    x    = 'bateos',
-                    y    = 'runs',
-                    c    = 'firebrick',
-                    kind = "scatter",
-                    ax   = ax
-                    )
-        ax.set_title('Distribución de bateos y runs');
+        datos.plot(x=col_x, y=col_y, c='firebrick', kind="scatter", ax=ax)
+        ax.set_title(f'Distribución de {col_x} y {col_y}')
 
         # Correlación lineal entre las dos variables
-        corr_test = pearsonr(x = datos['bateos'], y =  datos['runs'])
-        print("Coeficiente de correlación de Pearson: ", corr_test[0])  
+        corr_test = pearsonr(x=datos[col_x], y=datos[col_y])
+        print(f"Coeficiente de correlación de Pearson entre {col_x} y {col_y}: ", corr_test[0])
         print("P-value: ", corr_test[1])
 
         # División de los datos en train y test
-        X = datos[['bateos']]
-        y = datos['runs']
+        X = datos[[col_x]]
+        y = datos[col_y]
 
         X_train, X_test, y_train, y_test = train_test_split(
-                                        X.values.reshape(-1,1),
-                                        y.values.reshape(-1,1),
-                                        train_size   = 0.8,
-                                        random_state = 1234,
-                                        shuffle      = True
-                                    )
+        X, y, train_size=0.8, random_state=1234, shuffle=True
+         )
 
-        #Creación del modelo utilizando matrices como en scikitlearn
-
-        # A la matriz de predictores se le tiene que añadir una columna de 1s para el intercept del modelo
+        # Ajuste del modelo utilizando matrices como en scikitlearn
         X_train = sm.add_constant(X_train, prepend=True)
-        modelo = sm.OLS(endog=y_train, exog=X_train,)
+        modelo = sm.OLS(endog=y_train, exog=X_train)
         modelo = modelo.fit()
-        print(modelo.summary())
 
         # Intervalos de confianza para los coeficientes del modelo
-        modelo.conf_int(alpha=0.05)
+        conf_int = modelo.conf_int(alpha=0.05)
 
         # Predicciones con intervalo de confianza del 95%
-
-        predicciones = modelo.get_prediction(exog = X_train).summary_frame(alpha=0.05)
-        predicciones['x'] = X_train[:, 1]
-        predicciones['y'] = y_train
-        predicciones = predicciones.sort_values('x')
-
-        # Gráfico del modelo
+        X_test = sm.add_constant(X_test, prepend=True)
+        predicciones = modelo.get_prediction(exog=X_test).summary_frame(alpha=0.05)
+    
+        # Gráfico del modelo y sus intervalos de confianza
         fig, ax = plt.subplots(figsize=(6, 3.84))
-
-        ax.scatter(predicciones['x'], predicciones['y'], marker='o', color = "gray")
-        ax.plot(predicciones['x'], predicciones["mean"], linestyle='-', label="OLS")
-        ax.plot(predicciones['x'], predicciones["mean_ci_lower"], linestyle='--', color='red', label="95% CI")
-        ax.plot(predicciones['x'], predicciones["mean_ci_upper"], linestyle='--', color='red')
-        ax.fill_between(predicciones['x'], predicciones["mean_ci_lower"], predicciones["mean_ci_upper"], alpha=0.1)
-        ax.legend();
+        ax.scatter(X_test[col_x], y_test, marker='o', color="gray")
+        ax.plot(X_test[col_x], predicciones["mean"], linestyle='-', label="OLS")
+        ax.plot(X_test[col_x], predicciones["mean_ci_lower"], linestyle='--', color='red', label="95% CI")
+        ax.plot(X_test[col_x], predicciones["mean_ci_upper"], linestyle='--', color='red')
+        ax.fill_between(X_test[col_x], predicciones["mean_ci_lower"], predicciones["mean_ci_upper"], alpha=0.1)
+        ax.legend()
         plt.show()
 
-        # Error de test del modelo 
+         # Error de test del modelo
+        errores_test = y_test - modelo.predict(X_test)
+        print("Errores de test del modelo:", errores_test)
 
-        X_test = sm.add_constant(X_test, prepend=True)
-        predicciones = modelo.predict(exog = X_test)
-        rmse = mean_squared_error(
-            y_true  = y_test,
-            y_pred  = predicciones,
-            squared = False
-                    )
-        print("")
-        print(f"El error (rmse) de test es: {rmse}")
-
-    def test_seleccionar_archivo(self):
-        ruta_archivo = seleccionar_archivo()
-        if ruta_archivo is not None: 
-            print("El archivo se ha importado de forma correcta")
 
     def test_cargar_datos(self): 
-        ruta_archivo = seleccionar_archivo()
+
+
+
+        print("Test cargar datos del modelo")
+        ruta_archivo = ruta()
         df = cargar_datos(ruta_archivo)
         extension = os.path.splitext(ruta_archivo)[1].lower()
 
         if extension == ".csv":
             df_csv = pd.read_csv(ruta_archivo)
             assert df.equals(df_csv)
+            print("El archivo csv se ha importado corectamente:", ruta_archivo)
+
         elif extension == ".xlsx":
             df_xlsx = pd.read_excel(ruta_archivo, engine='openpyxl')
             assert df.equals(df_xlsx)
+            print("El archivo xlsx se ha importado corectamente:", ruta_archivo)
+
         elif extension == ".db":
            conn = sqlite3.connect(ruta_archivo)
            df_db = pd.read_sql_query("SELECT * FROM california_housing_dataset", conn)
            conn.close
            assert df.equals(df_db)
-    
-    def test_seleccionar_columna(self):
-        columnas_finales = ["longitude","latitude","housing_median_age","total_rooms","total_bedrooms","population","households","median_income","median_house_value"]
+           print("El archivo db se ha importado corectamente:", ruta_archivo)
 
-        ruta_archivo = seleccionar_archivo() 
-        df = cargar_datos(ruta_archivo)
-        columnas = obtener_columnas_numericas(df)
+        else:
+            print("El archivo no tiene la extensión necesaria o no ha sido seleccionado")
 
-        assert columnas_finales == columnas 
 
     def test_calcular_rmse(self):
-        ruta_archivo = seleccionar_archivo()
-        col_x = 'longitude'
-        col_y = 'latitude'
+
+
+
+        print("Test para RMSE")
+        ruta_archivo = ruta()
+      
+        col_x = input("Nombre de la columna x seleccionada:")
+        col_y = input("Nombre de la columna y seleccionada:")
 
         modelo = ajustar_modelo(ruta_archivo, col_x, col_y)
 
@@ -255,33 +217,36 @@ class TestFuncionesAuxiliares(unittest.TestCase):
         # Comprueba que el RMSE es mayor o igual a cero
         self.assertGreaterEqual(rmse, 0.0)
 
-    def test_calcular_bondad(self):
-        ruta_archivo = seleccionar_archivo()
-        col_x = 'longitude'
-        col_y = 'latitude'
+        print("El RMSE se ha calculado de forma correcta", rmse)
 
-        modelo = ajustar_modelo(ruta_archivo, col_x, col_y)
-
-        bondad = calcular_bondad(modelo, ruta_archivo, col_x, col_y)
-
-        # Comprueba que la bondad es un número flotante 
-        self.assertIsInstance(bondad, float)
-
-        # Comprueba que la bondad de ajuste está en el rango [0, 1]
-        self.assertGreaterEqual(bondad, 0.0)
-        self.assertLessEqual(bondad, 1.0)
 
     def test_guardar_cargar(self):
-        col_x = 'households'
-        col_y = 'latitude'
-        rmse = 2.130504926089326
-        ruta_archivo = 'test.txt'
-        guardar(ruta_archivo, col_x, col_y, rmse)
-        datos = cargar(ruta_archivo)
 
+        print("Test guardar y cargar")
+        ruta_archivo = ruta()
+    
+        with open(ruta_archivo, 'r') as archivo:
+            lineas = archivo.readlines()
+            if len(lineas) != 3:
+                raise ValueError("El archivo debe contener tres líneas con los datos")
+
+        col_x = lineas[0].strip()  # Se lee la primera línea como col_x
+        col_y = lineas[1].strip()  # La segunda línea como col_y
+        rmse = float(lineas[2].strip())  # La tercera línea como rmse (convertida a float)
+
+        guardar("modelo_guardado.txt", col_x, col_y, rmse)
+    
+        # Cargar datos desde el archivo
+        datos = cargar("modelo_guardado.txt")
+    
+        # Verificar los datos cargados
         assert datos[0] == col_x
         assert datos[1] == col_y
-        assert datos[2] == rmse  
+        assert datos[2] == rmse
+
+        print("Se ha cargado el modelo con los datos del archivo correctamente.")
+
+
 
 if __name__ == "__main__":
     unittest.main()
