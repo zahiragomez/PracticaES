@@ -80,7 +80,7 @@ class PantallaPrincipal(tk.Frame):
         self.etiqueta_y = None
 
     def seleccionar_archivo(self):
-        self.ruta_archivo = seleccionar_archivo()
+              self.ruta_archivo = ruta()
         if self.ruta_archivo:
             self.ruta_seleccionada.set(
                 f"Ruta del archivo seleccionado: {self.ruta_archivo}"
