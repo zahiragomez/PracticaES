@@ -1,8 +1,9 @@
 import tkinter as tk
 from tkinter import filedialog
-from seleccion_columna import seleccionar_archivo, cargar_datos, obtener_columnas_numericas
+from seleccion_columna import ruta, cargar_datos, obtener_columnas_numericas
 from analisis_modelo import ajustar_modelo, actualizar_recta_regresion, calcular_rmse, calcular_bondad
 import funciones_auxiliares
+
 
 class PantallaPrincipal(tk.Frame):
     def __init__(self, parent, controller):
@@ -80,7 +81,7 @@ class PantallaPrincipal(tk.Frame):
         self.etiqueta_y = None
 
     def seleccionar_archivo(self):
-              self.ruta_archivo = ruta()
+        self.ruta_archivo = ruta()
         if self.ruta_archivo:
             self.ruta_seleccionada.set(
                 f"Ruta del archivo seleccionado: {self.ruta_archivo}"
