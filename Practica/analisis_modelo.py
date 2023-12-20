@@ -23,7 +23,7 @@ def actualizar_recta_regresion(modelo, ruta_archivo, col_x, col_y, canvas_regres
     # Utilizar la función cargar_datos del módulo seleccion_columna para cargar el archivo
     data = cargar_datos(ruta_archivo)
 
-    fig, ax = plt.subplots(figsize=(8, 6))
+    fig, ax = plt.subplots(figsize=(6, 4))
     scatter = ax.scatter(
         x=data[col_x],
         y=data[col_y],
