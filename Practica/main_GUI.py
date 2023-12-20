@@ -4,6 +4,7 @@ from seleccion_columna import ruta, cargar_datos, obtener_columnas_numericas
 from analisis_modelo import ajustar_modelo, actualizar_recta_regresion, calcular_rmse, calcular_bondad
 import funciones_auxiliares
 
+#
 
 class PantallaPrincipal(tk.Frame):
     def __init__(self, parent, controller):
@@ -81,15 +82,9 @@ class PantallaPrincipal(tk.Frame):
         self.etiqueta_y = None
 
     def seleccionar_archivo(self):
-<<<<<<< HEAD
-            self.ruta_archivo = ruta()
-            if self.ruta_archivo:
-                self.ruta_seleccionada.set(
-=======
         self.ruta_archivo = ruta()
         if self.ruta_archivo:
             self.ruta_seleccionada.set(
->>>>>>> 6aa390db45776df28dcc9d2bee5f4371d2dfdd3b
                 f"Ruta del archivo seleccionado: {self.ruta_archivo}"
             )
             self.actualizar_listas_columnas()
