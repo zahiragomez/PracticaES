@@ -4,15 +4,10 @@ import pandas as pd
 import sqlite3
 import matplotlib.pyplot as plt
 from matplotlib import style
-import statsmodels.api as sm
 import  os
-from scipy.stats import pearsonr
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error
-import statsmodels.api as sm
 from funciones_auxiliares import guardar, cargar
 from seleccion_columna import ruta, cargar_datos
-from analisis_modelo import ajustar_modelo, calcular_rmse
+from analisis_modelo import ajustar_modelo, calcular_rmse, actualizar_recta_regresion
 
 
 # Configuración matplotlib
@@ -30,8 +25,6 @@ warnings.filterwarnings('ignore')
 class TestFuncionesAuxiliares(unittest.TestCase):
 
     def test_interfaz(self):
-        
-     
 
         print ("Test GUI")
         ruta_archivo = ruta()
@@ -110,68 +103,37 @@ class TestFuncionesAuxiliares(unittest.TestCase):
     def test_modelos(self):
         print("Test modelos")
 
+        # Simula la ruta del archivo (reemplaza con tu ruta real)
         ruta_archivo = ruta()
-        df = cargar_datos(ruta_archivo)
 
-        # Verificar que hay al menos dos columnas en el conjunto de datos
-        if len(df.columns) < 2:
+        # Intenta cargar los datos y verifica si se ha cargado correctamente
+        data = cargar_datos(ruta_archivo)
+
+        if data is None:
+            raise ValueError("No se pudieron cargar los datos desde el archivo. Verifica la ruta del archivo y el método cargar_datos.")
+
+        # Verifica que hay al menos dos columnas en el conjunto de datos
+        if len(data.columns) < 2:
             raise ValueError("El conjunto de datos debe contener al menos dos columnas para el análisis")
 
         # Seleccionar las dos primeras columnas automáticamente
-        col_x, col_y = df.columns[:2]
+        col_x = data.columns[0]  # Simplemente usa las dos primeras columnas del DataFrame
+        col_y = data.columns[1]
 
-        datos = pd.DataFrame({col_x: df[col_x], col_y: df[col_y]})
+        modelo = ajustar_modelo(ruta_archivo, col_x, col_y)
 
-        # Gráfico
-        fig, ax = plt.subplots(figsize=(6, 3.84))
-        datos.plot(x=col_x, y=col_y, c='firebrick', kind="scatter", ax=ax)
-        ax.set_title(f'Distribución de {col_x} y {col_y}')
+        if modelo:
+            print(f"El modelo ha sido ajustado correctamente.")
 
-        # Correlación lineal entre las dos variables
-        corr_test = pearsonr(x=datos[col_x], y=datos[col_y])
-        print(f"Coeficiente de correlación de Pearson entre {col_x} y {col_y}: ", corr_test[0])
-        print("P-value: ", corr_test[1])
-
-        # División de los datos en train y test
-        X = datos[[col_x]]
-        y = datos[col_y]
-
-        X_train, X_test, y_train, y_test = train_test_split(
-        X, y, train_size=0.8, random_state=1234, shuffle=True
-         )
-
-        # Ajuste del modelo utilizando matrices como en scikitlearn
-        X_train = sm.add_constant(X_train, prepend=True)
-        modelo = sm.OLS(endog=y_train, exog=X_train)
-        modelo = modelo.fit()
-
-        # Intervalos de confianza para los coeficientes del modelo
-        conf_int = modelo.conf_int(alpha=0.05)
-
-        # Predicciones con intervalo de confianza del 95%
-        X_test = sm.add_constant(X_test, prepend=True)
-        predicciones = modelo.get_prediction(exog=X_test).summary_frame(alpha=0.05)
-    
-        # Gráfico del modelo y sus intervalos de confianza
-        fig, ax = plt.subplots(figsize=(6, 3.84))
-        ax.scatter(X_test[col_x], y_test, marker='o', color="gray")
-        ax.plot(X_test[col_x], predicciones["mean"], linestyle='-', label="OLS")
-        ax.plot(X_test[col_x], predicciones["mean_ci_lower"], linestyle='--', color='red', label="95% CI")
-        ax.plot(X_test[col_x], predicciones["mean_ci_upper"], linestyle='--', color='red')
-        ax.fill_between(X_test[col_x], predicciones["mean_ci_lower"], predicciones["mean_ci_upper"], alpha=0.1)
-        ax.legend()
-        plt.show()
-
-         # Error de test del modelo
-        errores_test = y_test - modelo.predict(X_test)
-        print("Errores de test del modelo:", errores_test)
-
-
+        else:
+            print("No se ha podido generar el modelo.")
+       
+        
     def test_cargar_datos(self): 
 
-
-
         print("Test cargar datos del modelo")
+
+
         ruta_archivo = ruta()
         df = cargar_datos(ruta_archivo)
         extension = os.path.splitext(ruta_archivo)[1].lower()
@@ -199,9 +161,9 @@ class TestFuncionesAuxiliares(unittest.TestCase):
 
     def test_calcular_rmse(self):
 
-
-
         print("Test para RMSE")
+
+
         ruta_archivo = ruta()
       
         col_x = input("Nombre de la columna x seleccionada:")
