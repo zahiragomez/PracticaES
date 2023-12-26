@@ -33,13 +33,13 @@ def cargar(ruta_archivo):
             raise ValueError("El archivo no contiene la información necesaria.")
 
         # Recuperar el modelo y los coeficientes
-        modelo = sm.OLS(np.array([]), np.array([]))  # Crear un modelo vacío
         modelo_params = modelo_data.get('params')
         modelo_rsquared = modelo_data.get('rsquared')
 
         if modelo_params is None or modelo_rsquared is None:
             raise ValueError("El archivo no contiene la información necesaria del modelo.")
 
+        modelo = sm.OLS(np.array([0]), np.array([0]))  # Inicializar el modelo con datos ficticios
         modelo.params = np.array(modelo_params)
         modelo.rsquared = modelo_rsquared
 

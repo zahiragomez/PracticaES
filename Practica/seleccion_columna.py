@@ -21,9 +21,9 @@ def cargar_datos(ruta_archivo):
             df = pd.read_excel(ruta_archivo, engine='openpyxl')
 
         elif extension == ".db":
-           conn = sqlite3.connect(ruta_archivo)
-           df = pd.read_sql_query("SELECT * FROM california_housing_dataset", conn)
-           conn.close
+            conn = sqlite3.connect(ruta_archivo)
+            df = pd.read_sql_query("SELECT * FROM california_housing_dataset", conn)
+            conn.close()
 
         else:
             # Si la extensión no es reconocida, muestra un mensaje de error
@@ -31,6 +31,7 @@ def cargar_datos(ruta_archivo):
             return None
 
         return df
+
     except pd.errors.EmptyDataError:
         print("Error: El archivo está vacío")
         return None

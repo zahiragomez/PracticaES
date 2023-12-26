@@ -5,7 +5,6 @@ from analisis_modelo import ajustar_modelo, actualizar_recta_regresion, calcular
 import funciones_auxiliares
 from funciones_auxiliares import guardar
 
-#
 
 class PantallaPrincipal(tk.Frame):
     def __init__(self, parent, controller):
@@ -244,7 +243,7 @@ class PantallaPrincipal(tk.Frame):
         if ruta_archivo:
             col_x, col_y, rmse, modelo = funciones_auxiliares.cargar(ruta_archivo)
 
-            if modelo is not None:
+            if col_x is not None and col_y is not None and modelo is not None:
                 self.col_x = col_x
                 self.col_y = col_y
                 self.rmse = rmse
@@ -254,7 +253,12 @@ class PantallaPrincipal(tk.Frame):
                 print("Coeficientes del modelo:")
                 print(self.modelo.params)
 
+                self.actualizar_listas_columnas()  # Agrega esta línea para actualizar las listas de columnas
+
                 self.realizar_analisis()
+
+            else:
+                print("Error: No se pudo cargar el modelo.")
         
 
 
