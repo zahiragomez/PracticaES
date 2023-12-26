@@ -3,6 +3,7 @@ from tkinter import filedialog
 from seleccion_columna import ruta, cargar_datos, obtener_columnas_numericas
 from analisis_modelo import ajustar_modelo, actualizar_recta_regresion, calcular_rmse, calcular_bondad
 import funciones_auxiliares
+from funciones_auxiliares import guardar
 
 #
 
@@ -12,9 +13,11 @@ class PantallaPrincipal(tk.Frame):
 
         self.col_x = None
         self.col_y = None
+        self.modelo= None
         self.fig1 = None
         self.fig2 = None
         self.canvas_regresion = None
+        self.rmse = None
 
         self.configure(background="light blue")
         self.controller = controller
@@ -199,35 +202,60 @@ class PantallaPrincipal(tk.Frame):
                     self.canvas_regresion.destroy()
 
                 self.canvas_regresion = tk.Canvas(self.frame_archivo_seleccionado)
-
                 self.canvas_regresion.grid(row=2, column=0, columnspan=3, pady=20, sticky=tk.NSEW)
+
+                # Actualizar el atributo self.modelo con el modelo ajustado
+                self.modelo = modelo
 
                 self.boton_guardar.config(state='normal')
                 actualizar_recta_regresion(modelo, self.ruta_archivo, self.col_x, self.col_y, self.canvas_regresion)
 
                 self.rmse = calcular_rmse(modelo, self.ruta_archivo, self.col_x, self.col_y)
 
+                # Etiqueta para mostrar el RMSE
+                self.etiqueta_rmse = tk.Label(
+                    self.frame_archivo_seleccionado,
+                    text=f"RMSE: {self.rmse:.4f}",
+                    font=("Comfortaa", 12),
+                    bg="light blue",
+                    fg="black",
+                )
+                self.etiqueta_rmse.grid(row=5, column=0, columnspan=2, pady=(0, 10), padx=5, sticky=tk.W)
+
                 self.bondad = calcular_bondad(modelo, self.ruta_archivo, self.col_x, self.col_y)
 
-                # Actualizar la etiqueta del RMSE
-                self.etiqueta_rmse.config(text=f"RMSE: {self.rmse:.4f}")
-
-                # Actualizar la etiqueta del R^2
-                self.etiqueta_r2.config(text=f"Coeficiente de determinación (R^2): {self.bondad:.4f}")
+                # Etiqueta para mostrar el R^2
+                self.etiqueta_r2 = tk.Label(
+                    self.frame_archivo_seleccionado,
+                    text=f"Coeficiente de determinación (R^2): {self.bondad:.4f}",
+                    font=("Comfortaa", 12),
+                    bg="light blue",
+                    fg="black",
+                )
+                self.etiqueta_r2.grid(row=6, column=0, columnspan=2, pady=(0, 10), padx=5, sticky=tk.W)
 
     def guardar(self):
         ruta_archivo = filedialog.asksaveasfilename()
-        funciones_auxiliares.guardar(ruta_archivo, self.col_x, self.col_y, self.rmse)
+        if ruta_archivo and self.modelo is not None:
+            funciones_auxiliares.guardar(ruta_archivo, self.col_x, self.col_y, self.rmse, self.modelo)
 
     def cargar(self):
         ruta_archivo = filedialog.askopenfilename()
-        datos = funciones_auxiliares.cargar(ruta_archivo)
+        if ruta_archivo:
+            col_x, col_y, rmse, modelo = funciones_auxiliares.cargar(ruta_archivo)
 
-        self.col_x = datos[0]
-        self.col_y = datos[1]
-        self.rmse = datos[2]
+            if modelo is not None:
+                self.col_x = col_x
+                self.col_y = col_y
+                self.rmse = rmse
+                self.modelo = modelo
 
-        self.realizar_analisis()
+                # Mostrar los coeficientes del modelo en la consola
+                print("Coeficientes del modelo:")
+                print(self.modelo.params)
+
+                self.realizar_analisis()
+        
 
 
 class Manager(tk.Tk):
