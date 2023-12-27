@@ -39,7 +39,7 @@ def cargar(ruta_archivo):
         if modelo_params is None or modelo_rsquared is None:
             raise ValueError("El archivo no contiene la información necesaria del modelo.")
 
-        modelo = sm.OLS(np.array([0]), np.array([0]))  # Inicializar el modelo con datos ficticios
+        modelo = sm.OLS(np.zeros([1]), np.zeros([1]))  # Inicializar el modelo con datos ficticios
         modelo.params = np.array(modelo_params)
         modelo.rsquared = modelo_rsquared
 

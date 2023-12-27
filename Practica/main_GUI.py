@@ -4,6 +4,7 @@ from seleccion_columna import ruta, cargar_datos, obtener_columnas_numericas
 from analisis_modelo import ajustar_modelo, actualizar_recta_regresion, calcular_rmse, calcular_bondad
 import funciones_auxiliares
 from funciones_auxiliares import guardar
+from funciones_auxiliares import cargar
 
 
 class PantallaPrincipal(tk.Frame):
@@ -240,6 +241,7 @@ class PantallaPrincipal(tk.Frame):
 
     def cargar(self):
         ruta_archivo = filedialog.askopenfilename()
+        print(f"Archivo seleccionado: {ruta_archivo}")  # Add this line
         if ruta_archivo:
             col_x, col_y, rmse, modelo = funciones_auxiliares.cargar(ruta_archivo)
 
@@ -259,7 +261,6 @@ class PantallaPrincipal(tk.Frame):
 
             else:
                 print("Error: No se pudo cargar el modelo.")
-        
 
 
 class Manager(tk.Tk):
