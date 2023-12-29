@@ -52,31 +52,6 @@ def actualizar_recta_regresion(modelo, ruta_archivo, col_x, col_y, canvas_regres
     canvas.draw()
     canvas.get_tk_widget().grid(row=0, column=0, sticky=tk.NSEW)
 
-def actualizar_recta_regresion(modelo, ruta_archivo, col_x, col_y, canvas_regresion):
-    # Utilizar la función cargar_datos del módulo seleccion_columna para cargar el archivo
-    data = cargar_datos(ruta_archivo)
-
-    fig, ax = plt.subplots(figsize=(6, 4))
-    scatter = ax.scatter(
-        x=data[col_x],
-        y=data[col_y],
-        c="#FFA500",
-        label="Datos de dispersión",
-        marker="o",
-    )
-    ax.set_title(f'Distribución de {col_x} y {col_y}')
-    ax.set_xlabel('Eje X')
-    ax.set_ylabel('Eje Y')
-    ax.legend(handles=[scatter], loc='upper right')
-    ax.plot(data[col_x], modelo.predict(exog=sm.add_constant(data[col_x], prepend=True)), linestyle='-', color='blue', label="OLS", linewidth=2)
-    ci = modelo.get_prediction(exog=sm.add_constant(data[col_x], prepend=True)).summary_frame(alpha=0.05)
-    ax.fill_between(data[col_x], ci["mean_ci_lower"], ci["mean_ci_upper"], color='orange', alpha=0.1, label='95% CI')
-
-    canvas_regresion.delete("all")
-    canvas = FigureCanvasTkAgg(fig, master=canvas_regresion)
-    canvas.draw()
-    canvas.get_tk_widget().grid(row=0, column=0, sticky=tk.NSEW)
-
 
 def calcular_rmse(modelo, ruta_archivo, col_x, col_y):
     # Utilizar la función cargar_datos del módulo seleccion_columna para cargar el archivo
