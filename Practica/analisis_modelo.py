@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import tkinter as tk
 from seleccion_columna import cargar_datos
+import re
 
 def ajustar_modelo(ruta_archivo, col_x, col_y):
     data = cargar_datos(ruta_archivo)
@@ -103,3 +104,36 @@ def calcular_bondad(modelo, ruta_archivo, col_x, col_y):
 
     r_cuadrado = 1 - (ssr / sst)
     return r_cuadrado
+
+def obtener_ecuación(modelo): 
+    # Obtener los coeficientes del modelo
+    coeficientes = modelo.params
+
+    # Crear la ecuación como una cadena de texto
+    ecuacion = "y = " + str(coeficientes[0])
+    for i in range(1, len(coeficientes)):
+        if coeficientes[i] >= 0:
+            ecuacion += " + " + str(coeficientes[i]) + "*x"
+        else: 
+            ecuacion += str(coeficientes[i]) + "*x"
+
+    return ecuacion
+
+def prediccion(ruta_archivo, col_x, col_y, valor_x):
+    modelo = ajustar_modelo(ruta_archivo, col_x, col_y)
+    ecuacion = obtener_ecuación(modelo)
+
+    # Usamos una expresión regular para extraer los coeficientes de la ecuación
+    final_ecu = str(ecuacion)
+
+    match = re.search(r'y = ([-\d.]+)-([\d.]+)\*x', final_ecu)
+
+    if match:
+        m = float(match.group(1))  # coeficiente de x
+        b = float(match.group(2))  # término independiente
+    else:
+        raise ValueError(f"No se pudieron extraer los coeficientes de la ecuación '{ecuacion}'")
+    
+    prediccion = (m * valor_x) + b 
+
+    return prediccion
