@@ -18,6 +18,7 @@ class PantallaPrincipal(tk.Frame):
         self.fig2 = None
         self.canvas_regresion = None
         self.rmse = None
+        self.valor_x = None
 
         self.configure(background="light blue")
         self.controller = controller
@@ -226,6 +227,17 @@ class PantallaPrincipal(tk.Frame):
             self.boton_prediccion.config(state='disabled')
             self.boton_prediccion.grid(row=8, column=2, pady=(0, 10), padx=5, sticky=tk.W)
 
+            # Crear un widget de entrada de texto
+            self.etiqueta_valor_x = tk.Label(
+                self.frame_archivo_seleccionado,
+                text=f"Introduzca un valor para x: ",
+                font=("Comfortaa", 12),
+                bg="light blue",
+                fg="black",
+            )
+            self.etiqueta_valor_x.grid(row=9, column=0, columnspan=2, pady=(0, 10), padx=5, sticky=tk.W)
+            self.entry = tk.Entry(self.frame_archivo_seleccionado)
+            self.entry.grid(row=9, column=2, columnspan=2, pady=(0, 10), padx=5, sticky=tk.W)
 
 
     def realizar_analisis(self):
@@ -310,23 +322,38 @@ class PantallaPrincipal(tk.Frame):
             else:
                 print("Error: No se pudo cargar el modelo.")
 
-    def prediccion(self): 
-            if self.ruta_archivo and self.col_x and self.col_ is not None: 
-            # Crear un widget de entrada de texto
-                entry = tk.Entry(self)
-                self.valor_x = float(entry.get())
+    def prediccion(self):
+        if self.ruta_archivo and self.col_x and self.col_y is not None: 
+                valor_x_str = self.entry.get()
 
-                self.prediccion = prediccion(self.ruta_archivo, self.col_x, self.col_y, self.valor_x)
+                if valor_x_str.strip():  # Verificar si la cadena no está vacía después de eliminar espacios en blanco
+                    try:
+                        valor_x = float(valor_x_str)
+                        resultado_prediccion = prediccion(self.ruta_archivo, self.col_x, self.col_y, valor_x)
 
-                # Etiqueta para mostrar la prediccion
-                self.etiqueta_prediccion = tk.Label(
-                    self.frame_archivo_seleccionado,
-                    text=f"Ecuación: {self.prediccion}",
-                    font=("Comfortaa", 12),
-                    bg="light blue",
-                    fg="black",
-                )
-                self.etiqueta_prediccion.grid(row=8, column=0, columnspan=2, pady=(0, 10), padx=5, sticky=tk.W)
+                        # Etiqueta para mostrar la predicción
+                        self.etiqueta_prediccion.config(
+                            text=f"Predicción: {resultado_prediccion}",
+                            font=("Comfortaa", 12),
+                            bg="light blue",
+                            fg="black",
+                        )
+                    except ValueError:
+                        # Manejar el caso en el que la cadena no se puede convertir a un número
+                        self.etiqueta_prediccion.config(
+                            text="Error: Ingrese un valor numérico para x",
+                            font=("Comfortaa", 12),
+                            bg="light blue",
+                            fg="black",
+                        )
+                else:
+                    # Manejar el caso en el que la cadena está vacía
+                    self.etiqueta_prediccion.config(
+                        text="Error: El campo de entrada está vacío",
+                        font=("Comfortaa", 12),
+                        bg="light blue",
+                        fg="black",
+                    )
 
 class Manager(tk.Tk):
     def __init__(self, *args, **kwargs):
