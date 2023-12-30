@@ -33,8 +33,7 @@ class PantallaPrincipal(tk.Frame):
         self.canvas_regresion = None
         self.rmse = None
         self.valor_x = None
-        self.coeficiente_pendiente = None
-        self.constante_pendiente = None
+        
 
         #Configuracion general de la pantalla principal
         self.configure(background="light blue")
@@ -332,11 +331,8 @@ class PantallaPrincipal(tk.Frame):
                 #Actualiza el atributo self.modelo con el modelo ajustado
                 self.modelo = modelo
 
-                # Almacena el coeficiente de la pendiente
-                self.coeficiente_pendiente = modelo.params[self.col_x]
-
-                # Almacena la constante de la pendiente
-                self.constante_pendiente = modelo.params['const']
+                
+                
 
                 self.boton_guardar.config(state='normal')
                 self.boton_prediccion.config(state='normal')
@@ -348,26 +344,7 @@ class PantallaPrincipal(tk.Frame):
 
                 self.rmse = calcular_rmse(modelo, self.ruta_archivo, self.col_x, self.col_y)
 
-                # Actualiza la etiqueta del coeficiente de la pendiente
-                self.etiqueta_coeficiente.config(
-                    text=f"Coeficiente de Pendiente: {self.coeficiente_pendiente:.4f}",
-                    font=("Comfortaa", 12),
-                    bg="light blue",
-                    fg="black",
-                )
-                self.etiqueta_coeficiente.grid(row=4, column=0, columnspan=2, pady=(0, 10), padx=5, sticky=tk.W)
-
-                # Forzar la actualización de la interfaz gráfica
-                self.update_idletasks()
-
-                # Actualiza la etiqueta de la constante de la pendiente
-                self.etiqueta_constante.config(
-                    text=f"Constante de Pendiente: {self.constante_pendiente:.4f}",
-                    font=("Comfortaa", 12),
-                    bg="light blue",
-                    fg="black",
-                )
-                self.etiqueta_constante.grid(row=5, column=1, columnspan=2, pady=(0, 10), padx=5, sticky=tk.W)
+                
 
                 #Etiqueta para mostrar el RMSE
                 self.etiqueta_rmse = tk.Label(
@@ -407,8 +384,7 @@ class PantallaPrincipal(tk.Frame):
         ruta_archivo = filedialog.asksaveasfilename()
         if ruta_archivo and self.modelo is not None:
             try:
-                coeficiente_pendiente = self.modelo.params[self.col_x]
-                constante_pendiente = self.modelo.params['const']
+                
                 prediccion_valor = prediccion(self.ruta_archivo, self.col_x, self.col_y, 5.0)  # Ejemplo de predicción con un valor arbitrario
 
                 funciones_auxiliares.guardar(
@@ -417,8 +393,7 @@ class PantallaPrincipal(tk.Frame):
                     self.col_y,
                     self.rmse,
                     self.modelo,
-                    coeficiente_pendiente,
-                    constante_pendiente,
+                    
                     prediccion_valor
                 )
             
@@ -434,7 +409,7 @@ class PantallaPrincipal(tk.Frame):
         print(f"Archivo seleccionado: {ruta_archivo}")  # Puedes mantener esta línea de depuración
         if ruta_archivo:
             try:
-                col_x, col_y, rmse, modelo, coeficiente_pendiente, constante_pendiente, prediccion_valor = funciones_auxiliares.cargar(ruta_archivo)
+                col_x, col_y, rmse, modelo, prediccion_valor = funciones_auxiliares.cargar(ruta_archivo)
 
                 if col_x is not None and col_y is not None and modelo is not None:
                     self.col_x = col_x
