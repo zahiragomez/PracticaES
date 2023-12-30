@@ -34,7 +34,7 @@ class PantallaPrincipal(tk.Frame):
         self.rmse = None
         self.valor_x = None
         self.coeficiente_pendiente = None
-        self.constante_pendiente = None
+        
 
         #Configuracion general de la pantalla principal
         self.configure(background="light blue")
@@ -390,7 +390,7 @@ class PantallaPrincipal(tk.Frame):
                     self.col_x,
                     self.col_y,
                     self.rmse,
-                    self.modelo,
+                    self.modelo
                 )
 
                 # Llamar a la función de verificación después de guardar
@@ -399,10 +399,9 @@ class PantallaPrincipal(tk.Frame):
             except Exception as e:
                 print(f"Error: No se pudo guardar el modelo. Detalles: {str(e)}")
 
-
     def cargar(self):
         ruta_archivo = filedialog.askopenfilename()
-        print(f"Archivo seleccionado: {ruta_archivo}")  # Puedes mantener esta línea de depuración
+        print(f"Archivo seleccionado: {ruta_archivo}")
         if ruta_archivo:
             try:
                 col_x, col_y, rmse, modelo = funciones_auxiliares.cargar(ruta_archivo)

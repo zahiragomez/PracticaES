@@ -17,9 +17,6 @@ def guardar(ruta_archivo, col_x, col_y, rmse, modelo):
             }, f)
         print(f"Modelo guardado exitosamente en '{ruta_archivo}'.")
         
-        # Llamar a la función de verificación después de guardar
-        verificar_guardado(ruta_archivo)
-
     except Exception as e:
         print(f"Error: No se pudo guardar el modelo. Detalles: {str(e)}")
 
@@ -29,9 +26,6 @@ def cargar(ruta_archivo):
         with open(ruta_archivo, 'rb') as f:
             data = pickle.load(f)
 
-        if data is None:
-            raise ValueError("El archivo no contiene datos.")
-
         col_x = data.get('col_x')
         col_y = data.get('col_y')
         rmse = data.get('rmse')
@@ -40,14 +34,12 @@ def cargar(ruta_archivo):
         if col_x is None or col_y is None or rmse is None or modelo_data is None:
             raise ValueError("El archivo no contiene la información necesaria.")
 
-        # Recupera el modelo y los coeficientes
         modelo_params = modelo_data.get('params')
         modelo_rsquared = modelo_data.get('rsquared')
 
         if modelo_params is None or modelo_rsquared is None:
             raise ValueError("El archivo no contiene la información necesaria del modelo.")
 
-        # Inicializa el modelo con datos ficticios
         modelo = sm.OLS(np.zeros([1]), np.zeros([1]))
         modelo.params = np.array(modelo_params)
         modelo.rsquared = modelo_rsquared
@@ -56,13 +48,12 @@ def cargar(ruta_archivo):
 
     except FileNotFoundError:
         print(f"Error: El archivo '{ruta_archivo}' no existe.")
-        return None, None, None, None
+        return None
 
     except Exception as e:
         print(f"Error al cargar el modelo. Detalles: {str(e)}")
-        return None, None, None, None
-
-
+        return None
+    
 def verificar_guardado(ruta_archivo):
     try:
         with open(ruta_archivo, 'rb') as f:
