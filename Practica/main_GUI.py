@@ -20,6 +20,8 @@ class PantallaPrincipal(tk.Frame):
         self.canvas_regresion = None
         self.rmse = None
         self.valor_x = None
+        self.coeficiente_pendiente = None
+        self.constante_pendiente = None
 
         #Configuracion general de la pantalla principal
         self.configure(background="light blue")
@@ -154,6 +156,26 @@ class PantallaPrincipal(tk.Frame):
             )
             self.etiqueta_y.grid(row=3, column=1, padx=(10, 10), pady=10, sticky=tk.E)
 
+            # Nueva etiqueta para mostrar el coeficiente de la pendiente
+            self.etiqueta_coeficiente = tk.Label(
+                self.frame_archivo_seleccionado,
+                text="Coeficiente de Pendiente: ",
+                font=("Comfortaa", 12),
+                bg="light blue",
+                fg="black",
+            )
+            self.etiqueta_coeficiente.grid(row=4, column=0, columnspan=2, pady=(0, 10), padx=5, sticky=tk.W)
+
+            # Nueva etiqueta para mostrar la constante de la pendiente
+            self.etiqueta_constante = tk.Label(
+                self.frame_archivo_seleccionado,
+                text="Constante de Pendiente: ",
+                font=("Comfortaa", 12),
+                bg="light blue",
+                fg="black",
+            )
+            self.etiqueta_constante.grid(row=4, column=0, columnspan=2, pady=(0, 10), padx=5, sticky=tk.W)
+
             #Boton Crear Modelo
             self.boton_modelo = tk.Button(
                 self.frame_archivo_seleccionado,
@@ -260,11 +282,40 @@ class PantallaPrincipal(tk.Frame):
                 #Actualiza el atributo self.modelo con el modelo ajustado
                 self.modelo = modelo
 
+                # Almacena el coeficiente de la pendiente
+                self.coeficiente_pendiente = modelo.params[self.col_x]
+
+                # Almacena la constante de la pendiente
+                self.constante_pendiente = modelo.params['const']
+
                 self.boton_guardar.config(state='normal')
                 self.boton_prediccion.config(state='normal')
                 actualizar_recta_regresion(modelo, self.ruta_archivo, self.col_x, self.col_y, self.canvas_regresion)
 
                 self.rmse = calcular_rmse(modelo, self.ruta_archivo, self.col_x, self.col_y)
+
+
+                # Actualiza la etiqueta del coeficiente de la pendiente
+                self.etiqueta_coeficiente.config(
+                    text=f"Coeficiente de Pendiente: {self.coeficiente_pendiente:.4f}",
+                    font=("Comfortaa", 12),
+                    bg="light blue",
+                    fg="black",
+                )
+                self.etiqueta_coeficiente.grid(row=4, column=0, columnspan=2, pady=(0, 10), padx=5, sticky=tk.W)
+
+                # Forzar la actualización de la interfaz gráfica
+                self.update_idletasks()
+
+                # Actualiza la etiqueta de la constante de la pendiente
+                self.etiqueta_constante.config(
+                    text=f"Constante de Pendiente: {self.constante_pendiente:.4f}",
+                    font=("Comfortaa", 12),
+                    bg="light blue",
+                    fg="black",
+                )
+                self.etiqueta_constante.grid(row=5, column=1, columnspan=2, pady=(0, 10), padx=5, sticky=tk.W)
+
 
                 #Etiqueta para mostrar el RMSE
                 self.etiqueta_rmse = tk.Label(
@@ -303,7 +354,7 @@ class PantallaPrincipal(tk.Frame):
     def guardar(self):
         ruta_archivo = filedialog.asksaveasfilename()
         if ruta_archivo and self.modelo is not None:
-            funciones_auxiliares.guardar(ruta_archivo, self.col_x, self.col_y, self.rmse, self.modelo)
+            funciones_auxiliares.guardar(ruta_archivo, self.col_x, self.col_y, self.rmse, self.modelo, self.coeficiente_pendiente, self.constante_pendiente)
 
     #Funcion que carga un modelo desde un archivo
     def cargar(self):

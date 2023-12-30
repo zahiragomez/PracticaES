@@ -31,7 +31,7 @@ def actualizar_recta_regresion(modelo, ruta_archivo, col_x, col_y, canvas_regres
         print("Error: No se pudo cargar el archivo.")
         return None
 
-    fig, ax = plt.subplots(figsize=(6, 4))
+    fig, ax = plt.subplots(figsize=(5.5, 3.5))
     scatter = ax.scatter(
         x=data[col_x],
         y=data[col_y],

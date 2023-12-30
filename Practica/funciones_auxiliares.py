@@ -3,7 +3,7 @@ import statsmodels.api as sm
 import numpy as np
 
 #Funcion que guarda un modelo y sus parametros en un archivo utilizando Pickle
-def guardar(ruta_archivo, col_x, col_y, rmse, modelo):
+def guardar(ruta_archivo, col_x, col_y, rmse, modelo, coeficiente_pendiente, constante_pendiente):
     try:
         with open(ruta_archivo, 'wb') as f:
             pickle.dump({
@@ -13,6 +13,8 @@ def guardar(ruta_archivo, col_x, col_y, rmse, modelo):
                 'modelo': {
                     'params': modelo.params.tolist() if modelo.params is not None else None,
                     'rsquared': modelo.rsquared if modelo.rsquared is not None else None,
+                    'coeficiente_pendiente': coeficiente_pendiente,
+                    'constante_pendiente':constante_pendiente,
                 },
             }, f)
         print(f"Modelo guardado exitosamente en '{ruta_archivo}'.")
@@ -26,6 +28,9 @@ def cargar(ruta_archivo):
         with open(ruta_archivo, 'rb') as f:
             data = pickle.load(f)
 
+        if data is None:
+            raise ValueError("El archivo no contiene datos.")
+
         col_x = data.get('col_x')
         col_y = data.get('col_y')
         rmse = data.get('rmse')
@@ -37,6 +42,8 @@ def cargar(ruta_archivo):
         #Recupera el modelo y los coeficientes
         modelo_params = modelo_data.get('params')
         modelo_rsquared = modelo_data.get('rsquared')
+        coeficiente_pendiente = modelo_data.get('coeficiente_pendiente')
+        constante_pendiente = modelo_data.get('constante_pendiente')
 
         if modelo_params is None or modelo_rsquared is None:
             raise ValueError("El archivo no contiene la información necesaria del modelo.")
@@ -46,7 +53,7 @@ def cargar(ruta_archivo):
         modelo.params = np.array(modelo_params)
         modelo.rsquared = modelo_rsquared
 
-        return col_x, col_y, rmse, modelo
+        return col_x, col_y, rmse, modelo, coeficiente_pendiente, constante_pendiente
 
     except FileNotFoundError:
         print(f"Error: El archivo '{ruta_archivo}' no existe.")
