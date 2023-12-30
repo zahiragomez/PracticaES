@@ -371,30 +371,60 @@ class PantallaPrincipal(tk.Frame):
     def guardar(self):
         ruta_archivo = filedialog.asksaveasfilename()
         if ruta_archivo and self.modelo is not None:
-            funciones_auxiliares.guardar(ruta_archivo, self.col_x, self.col_y, self.rmse, self.modelo, self.coeficiente_pendiente, self.constante_pendiente)
+            try:
+                coeficiente_pendiente = self.modelo.params[self.col_x]
+                constante_pendiente = self.modelo.params['const']
+                prediccion_valor = prediccion(self.ruta_archivo, self.col_x, self.col_y, 5.0)  # Ejemplo de predicción con un valor arbitrario
+
+                funciones_auxiliares.guardar(
+                    ruta_archivo,
+                    self.col_x,
+                    self.col_y,
+                    self.rmse,
+                    self.modelo,
+                    coeficiente_pendiente,
+                    constante_pendiente,
+                    prediccion_valor
+                )
+            
+                # Llamar a la función de verificación después de guardar
+                funciones_auxiliares.verificar_guardado(ruta_archivo)
+            
+            except Exception as e:
+                print(f"Error: No se pudo guardar el modelo. Detalles: {str(e)}")
 
     #Funcion que carga un modelo desde un archivo
     def cargar(self):
         ruta_archivo = filedialog.askopenfilename()
-        print(f"Archivo seleccionado: {ruta_archivo}")  # Add this line
+        print(f"Archivo seleccionado: {ruta_archivo}")  # Puedes mantener esta línea de depuración
         if ruta_archivo:
-            col_x, col_y, rmse, modelo = funciones_auxiliares.cargar(ruta_archivo)
+            try:
+                col_x, col_y, rmse, modelo, coeficiente_pendiente, constante_pendiente, prediccion_valor = funciones_auxiliares.cargar(ruta_archivo)
 
-            if col_x is not None and col_y is not None and modelo is not None:
-                self.col_x = col_x
-                self.col_y = col_y
-                self.rmse = rmse
-                self.modelo = modelo
+                if col_x is not None and col_y is not None and modelo is not None:
+                    self.col_x = col_x
+                    self.col_y = col_y
+                    self.rmse = rmse
+                    self.modelo = modelo
 
-                print("Coeficientes del modelo:")
-                print(self.modelo.params)
+                    print("Coeficientes del modelo:")
+                    print(self.modelo.params)
 
-                self.actualizar_listas_columnas()
+                    self.actualizar_listas_columnas()
 
-                self.realizar_analisis()
+                    self.realizar_analisis()
 
-            else:
-                print("Error: No se pudo cargar el modelo.")
+                    # Si hay un valor de predicción almacenado, actualiza la interfaz
+                    if prediccion_valor is not None:
+                        # Etiqueta para mostrar la predicción
+                        self.etiqueta_prediccion.config(
+                            text=f"Predicción: {prediccion_valor}",
+                            font=("Comfortaa", 12),
+                            bg="light blue",
+                            fg="black",
+                        )
+            except Exception as e:
+                print(f"Error: No se pudo cargar el modelo. Detalles: {str(e)}")
 
     def prediccion(self):
         if self.ruta_archivo and self.col_x and self.col_y is not None: 
