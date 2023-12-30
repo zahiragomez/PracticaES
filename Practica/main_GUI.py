@@ -3,13 +3,26 @@ from tkinter import filedialog
 from seleccion_columna import ruta, cargar_datos, obtener_columnas_numericas
 from analisis_modelo import ajustar_modelo, actualizar_recta_regresion, calcular_rmse, calcular_bondad, obtener_ecuación, prediccion
 import funciones_auxiliares
-from funciones_auxiliares import guardar
-from funciones_auxiliares import cargar
 
 
 class PantallaPrincipal(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
+
+        self.contenedor_principal = tk.Frame(self, bg="light blue")
+        self.contenedor_principal.pack(side=tk.TOP, padx=10, pady=10, fill=tk.BOTH, expand=True)
+
+        self.frame_archivo_seleccionado = tk.Frame(self.contenedor_principal, bg="light blue")
+        self.frame_archivo_seleccionado.pack(side=tk.LEFT, padx=10, pady=10, fill=tk.BOTH)
+
+
+        # Contenedor para selección de columnas
+        self.frame_seleccion_columnas = tk.Frame(self.contenedor_principal, bg="light blue")
+        self.frame_seleccion_columnas.pack(side=tk.LEFT, padx=10, pady=10, fill=tk.BOTH)
+
+        # Contenedor para la gráfica y resultados
+        self.frame_grafica_resultados = tk.Frame(self.contenedor_principal, bg="light blue")
+        self.frame_grafica_resultados.pack(side=tk.RIGHT, padx=20, pady=20, fill=tk.BOTH)  # Eliminamos expand=True
 
         #Variables de clase para almacenar informacion
         self.col_x = None
@@ -32,9 +45,7 @@ class PantallaPrincipal(tk.Frame):
         self.variables_seleccionadas_x = []
         self.variables_seleccionadas_y = []
 
-        #Frame para la seleccion de archivo
-        self.frame_archivo_seleccionado = tk.Frame(self, bg="light blue")
-        self.frame_archivo_seleccionado.pack(side=tk.TOP, padx=10, pady=10)
+    
 
         #Indicaciones
         self.indicaciones_label = tk.Label(
@@ -273,11 +284,15 @@ class PantallaPrincipal(tk.Frame):
             modelo = ajustar_modelo(self.ruta_archivo, self.col_x, self.col_y)
 
             if modelo:
-                if self.canvas_regresion:
-                    self.canvas_regresion.destroy()
+                # Elimina elementos anteriores en el frame de gráfica y resultados
+                for widget in self.frame_grafica_resultados.winfo_children():
+                    widget.destroy()
 
-                self.canvas_regresion = tk.Canvas(self.frame_archivo_seleccionado)
-                self.canvas_regresion.grid(row=2, column=0, columnspan=3, pady=20, sticky=tk.NSEW)
+                # Actualiza la gráfica y resultados en el frame correspondiente
+                # En la sección donde se actualiza el Canvas con la gráfica:
+
+                self.canvas_regresion = tk.Canvas(self.frame_grafica_resultados, bg="light blue", highlightthickness=0)  # Cambiamos el fondo a "light blue"
+                self.canvas_regresion.pack(side=tk.TOP, padx=10, pady=10, fill=tk.BOTH)  # Eliminamos expand=True
 
                 #Actualiza el atributo self.modelo con el modelo ajustado
                 self.modelo = modelo
@@ -290,10 +305,13 @@ class PantallaPrincipal(tk.Frame):
 
                 self.boton_guardar.config(state='normal')
                 self.boton_prediccion.config(state='normal')
+
+                # Actualizamos la gráfica dentro del canvas
                 actualizar_recta_regresion(modelo, self.ruta_archivo, self.col_x, self.col_y, self.canvas_regresion)
 
-                self.rmse = calcular_rmse(modelo, self.ruta_archivo, self.col_x, self.col_y)
+                # Y dentro del método para centrar la gráfica:
 
+                self.rmse = calcular_rmse(modelo, self.ruta_archivo, self.col_x, self.col_y)
 
                 # Actualiza la etiqueta del coeficiente de la pendiente
                 self.etiqueta_coeficiente.config(
@@ -315,7 +333,6 @@ class PantallaPrincipal(tk.Frame):
                     fg="black",
                 )
                 self.etiqueta_constante.grid(row=5, column=1, columnspan=2, pady=(0, 10), padx=5, sticky=tk.W)
-
 
                 #Etiqueta para mostrar el RMSE
                 self.etiqueta_rmse = tk.Label(
@@ -418,11 +435,7 @@ class Manager(tk.Tk):
         self.title("Creador de modelos de regresión lineal")
 
         container = tk.Frame(self)
-        container.pack(
-            side=tk.TOP,
-            fill=tk.BOTH,
-            expand=True
-        )
+        container.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         container.configure(background="light blue")
         container.grid_columnconfigure(0, weight=1)
         container.grid_rowconfigure(0, weight=1)
