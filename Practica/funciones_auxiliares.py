@@ -2,6 +2,7 @@ import pickle
 import statsmodels.api as sm
 import numpy as np
 
+#Funcion que guarda un modelo y sus parametros en un archivo utilizando Pickle
 def guardar(ruta_archivo, col_x, col_y, rmse, modelo):
     try:
         with open(ruta_archivo, 'wb') as f:
@@ -19,6 +20,7 @@ def guardar(ruta_archivo, col_x, col_y, rmse, modelo):
     except Exception as e:
         print(f"Error: No se pudo guardar el modelo. Detalles: {str(e)}")
 
+#Funcion que carga un modelo y sus parametros desde un archivo
 def cargar(ruta_archivo):
     try:
         with open(ruta_archivo, 'rb') as f:
@@ -32,14 +34,15 @@ def cargar(ruta_archivo):
         if col_x is None or col_y is None or rmse is None or modelo_data is None:
             raise ValueError("El archivo no contiene la información necesaria.")
 
-        # Recuperar el modelo y los coeficientes
+        #Recupera el modelo y los coeficientes
         modelo_params = modelo_data.get('params')
         modelo_rsquared = modelo_data.get('rsquared')
 
         if modelo_params is None or modelo_rsquared is None:
             raise ValueError("El archivo no contiene la información necesaria del modelo.")
 
-        modelo = sm.OLS(np.zeros([1]), np.zeros([1]))  # Inicializar el modelo con datos ficticios
+        #Inicializa el modelo con datos ficticios
+        modelo = sm.OLS(np.zeros([1]), np.zeros([1]))
         modelo.params = np.array(modelo_params)
         modelo.rsquared = modelo_rsquared
 

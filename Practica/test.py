@@ -30,34 +30,34 @@ class TestFuncionesAuxiliares(unittest.TestCase):
         ruta_archivo = ruta()
         df = cargar_datos(ruta_archivo)
 
-        #va a mostrar la primera columna del archivo
+        #Muestra la primera columna del archivo
         primera_columna= df.columns[0]
 
-        #crea el objeto ventana
+        #Crea el objeto ventana
         ventana_prueba = tk.Tk() 
 
-        #dimensiones
+        #Dimensiones
         ventana_prueba.geometry("800x500")  
 
-        #color del fondo
+        #Color del fondo
         ventana_prueba.configure(background="light blue") 
 
-        #título de la ventana
+        #Titulo de la ventana
         tk.Wm.wm_title(ventana_prueba, "Generador de modelos (test) ") 
 
-        #crea un botón
+        #Crea un boton
         tk.Button(
 
-            #lo enlaza con la ventana creada
+            #Lo enlaza con la ventana creada
             ventana_prueba,
 
-            #texto dentro del botón
+            #Texto dentro del botón
             text= primera_columna,
 
-            #fuente del texto
+            #Fuente del texto
             font = ("Comfortaa", 15),
 
-            #fondo de la ventana (codigo del color en hexadecimal)
+            #Fondo de la ventana (codigo del color en hexadecimal)
             bg = "#FFB4CE", 
 
             
@@ -65,30 +65,30 @@ class TestFuncionesAuxiliares(unittest.TestCase):
             
         ).pack( #comando necesario para que vaya
 
-            #se amplia al eje X e Y
+            #Se amplia al eje X e Y
             fill = tk.BOTH, 
 
-            #se expande al redimensionar la ventana
+            #Se expande al redimensionar la ventana
             expand = True,
         )
 
-        #etiqueta
+        #Etiqueta
         tk.Label(
 
-            #llama al objeto ventana
+            #Llama al objeto ventana
             ventana_prueba,
 
-            #texto de la etiqueta
+            #Texto de la etiqueta
             text = "Pulse arriba para generar modelo",
 
-            #formato del texto
+            #Formato del texto
             font = ("Comfortaa", 15, "bold"),
 
             fg = "pink",
 
             bg = "white",
 
-            #que se centre
+            #Que se centre
             justify = "center"
 
         ).pack(
@@ -103,21 +103,21 @@ class TestFuncionesAuxiliares(unittest.TestCase):
     def test_modelos(self):
         print("Test modelos")
 
-        # Simula la ruta del archivo (reemplaza con tu ruta real)
+        #Simula la ruta del archivo (reemplaza con tu ruta real)
         ruta_archivo = ruta()
 
-        # Intenta cargar los datos y verifica si se ha cargado correctamente
+        #Intenta cargar los datos y verifica si se ha cargado correctamente
         data = cargar_datos(ruta_archivo)
 
         if data is None:
             raise ValueError("No se pudieron cargar los datos desde el archivo. Verifica la ruta del archivo y el método cargar_datos.")
 
-        # Verifica que hay al menos dos columnas en el conjunto de datos
+        #Verifica que hay al menos dos columnas en el conjunto de datos
         if len(data.columns) < 2:
             raise ValueError("El conjunto de datos debe contener al menos dos columnas para el análisis")
 
-        # Seleccionar las dos primeras columnas automáticamente
-        col_x = data.columns[0]  # Simplemente usa las dos primeras columnas del DataFrame
+        #Selecciona las dos primeras columnas automaticamente
+        col_x = data.columns[0]  #Simplemente usa las dos primeras columnas del DataFrame
         col_y = data.columns[1]
 
         modelo = ajustar_modelo(ruta_archivo, col_x, col_y)
@@ -138,6 +138,7 @@ class TestFuncionesAuxiliares(unittest.TestCase):
         df = cargar_datos(ruta_archivo)
         extension = os.path.splitext(ruta_archivo)[1].lower()
 
+        #Prueba diferentes extensiones y compara resultados
         if extension == ".csv":
             df_csv = pd.read_csv(ruta_archivo)
             assert df.equals(df_csv)
@@ -166,6 +167,7 @@ class TestFuncionesAuxiliares(unittest.TestCase):
 
         ruta_archivo = ruta()
       
+        #Solicita al usuario los nombres de las columnas
         col_x = input("Nombre de la columna x seleccionada:")
         col_y = input("Nombre de la columna y seleccionada:")
 
@@ -187,21 +189,22 @@ class TestFuncionesAuxiliares(unittest.TestCase):
         print("Test guardar y cargar")
         ruta_archivo = ruta()
     
+        #Abre el archivo y lee lineas
         with open(ruta_archivo, 'r') as archivo:
             lineas = archivo.readlines()
             if len(lineas) != 3:
                 raise ValueError("El archivo debe contener tres líneas con los datos")
 
-        col_x = lineas[0].strip()  # Se lee la primera línea como col_x
-        col_y = lineas[1].strip()  # La segunda línea como col_y
-        rmse = float(lineas[2].strip())  # La tercera línea como rmse (convertida a float)
+        col_x = lineas[0].strip()  #Se lee la primera linea como col_x
+        col_y = lineas[1].strip()  #La segunda linea como col_y
+        rmse = float(lineas[2].strip())  #La tercera linea como rmse (convertida a float)
 
         guardar("modelo_guardado.txt", col_x, col_y, rmse)
     
-        # Cargar datos desde el archivo
+        #Cargar datos desde el archivo
         datos = cargar("modelo_guardado.txt")
     
-        # Verificar los datos cargados
+        #Verificar los datos cargados
         assert datos[0] == col_x
         assert datos[1] == col_y
         assert datos[2] == rmse

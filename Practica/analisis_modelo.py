@@ -5,15 +5,15 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import tkinter as tk
 from seleccion_columna import cargar_datos
 
+#Funcion que ajusta un modelo de regresion lineal
 def ajustar_modelo(ruta_archivo, col_x, col_y):
     data = cargar_datos(ruta_archivo)
 
     if data is None:
-        # Manejar el caso en que no se pueda cargar el archivo
+        #Manejar el caso en que no se pueda cargar el archivo
         print("Error: No se pudo cargar el archivo.")
         return None
 
-    # Resto del código de ajustar_modelo
     data.dropna(subset=[col_x, col_y], inplace=True)
     X = data[col_x]
     X_i = sm.add_constant(X, prepend=True)
@@ -21,15 +21,15 @@ def ajustar_modelo(ruta_archivo, col_x, col_y):
     modelo = sm.OLS(endog=y, exog=X_i).fit()
     return modelo
 
+#Funcion que actualiza un grafico de dispersion con la recta de regresion y el intervalo de confianza
 def actualizar_recta_regresion(modelo, ruta_archivo, col_x, col_y, canvas_regresion):
     data = cargar_datos(ruta_archivo)
 
     if data is None:
-        # Manejar el caso en que no se pueda cargar el archivo
+        #Manejar el caso en que no se pueda cargar el archivo
         print("Error: No se pudo cargar el archivo.")
         return None
 
-    # Resto del código de actualizar_recta_regresion
     fig, ax = plt.subplots(figsize=(6, 4))
     scatter = ax.scatter(
         x=data[col_x],
@@ -51,34 +51,33 @@ def actualizar_recta_regresion(modelo, ruta_archivo, col_x, col_y, canvas_regres
     canvas.draw()
     canvas.get_tk_widget().grid(row=0, column=0, sticky=tk.NSEW)
 
-def actualizar_recta_regresion(modelo, ruta_archivo, col_x, col_y, canvas_regresion):
-    # Utilizar la función cargar_datos del módulo seleccion_columna para cargar el archivo
-    data = cargar_datos(ruta_archivo)
+# def actualizar_recta_regresion(modelo, ruta_archivo, col_x, col_y, canvas_regresion):
+#     # Utilizar la función cargar_datos del módulo seleccion_columna para cargar el archivo
+#     data = cargar_datos(ruta_archivo)
 
-    fig, ax = plt.subplots(figsize=(6, 4))
-    scatter = ax.scatter(
-        x=data[col_x],
-        y=data[col_y],
-        c="#FFA500",
-        label="Datos de dispersión",
-        marker="o",
-    )
-    ax.set_title(f'Distribución de {col_x} y {col_y}')
-    ax.set_xlabel('Eje X')
-    ax.set_ylabel('Eje Y')
-    ax.legend(handles=[scatter], loc='upper right')
-    ax.plot(data[col_x], modelo.predict(exog=sm.add_constant(data[col_x], prepend=True)), linestyle='-', color='blue', label="OLS", linewidth=2)
-    ci = modelo.get_prediction(exog=sm.add_constant(data[col_x], prepend=True)).summary_frame(alpha=0.05)
-    ax.fill_between(data[col_x], ci["mean_ci_lower"], ci["mean_ci_upper"], color='orange', alpha=0.1, label='95% CI')
+#     fig, ax = plt.subplots(figsize=(6, 4))
+#     scatter = ax.scatter(
+#         x=data[col_x],
+#         y=data[col_y],
+#         c="#FFA500",
+#         label="Datos de dispersión",
+#         marker="o",
+#     )
+#     ax.set_title(f'Distribución de {col_x} y {col_y}')
+#     ax.set_xlabel('Eje X')
+#     ax.set_ylabel('Eje Y')
+#     ax.legend(handles=[scatter], loc='upper right')
+#     ax.plot(data[col_x], modelo.predict(exog=sm.add_constant(data[col_x], prepend=True)), linestyle='-', color='blue', label="OLS", linewidth=2)
+#     ci = modelo.get_prediction(exog=sm.add_constant(data[col_x], prepend=True)).summary_frame(alpha=0.05)
+#     ax.fill_between(data[col_x], ci["mean_ci_lower"], ci["mean_ci_upper"], color='orange', alpha=0.1, label='95% CI')
 
-    canvas_regresion.delete("all")
-    canvas = FigureCanvasTkAgg(fig, master=canvas_regresion)
-    canvas.draw()
-    canvas.get_tk_widget().grid(row=0, column=0, sticky=tk.NSEW)
+#     canvas_regresion.delete("all")
+#     canvas = FigureCanvasTkAgg(fig, master=canvas_regresion)
+#     canvas.draw()
+#     canvas.get_tk_widget().grid(row=0, column=0, sticky=tk.NSEW)
 
-
+#Funcion que calcula la raiz cuadrada del error cuadratico medio (RMSE)
 def calcular_rmse(modelo, ruta_archivo, col_x, col_y):
-    # Utilizar la función cargar_datos del módulo seleccion_columna para cargar el archivo
     data = cargar_datos(ruta_archivo)
 
     X = sm.add_constant(data[col_x], prepend=True)
@@ -89,8 +88,8 @@ def calcular_rmse(modelo, ruta_archivo, col_x, col_y):
     rmse = mean_squared_error(y_true, y_pred, squared=False)
     return rmse
 
+#Funcion que calcula el coeficiente de determinacion (R cuadrado)
 def calcular_bondad(modelo, ruta_archivo, col_x, col_y):
-    # Utilizar la función cargar_datos del módulo seleccion_columna para cargar el archivo
     data = cargar_datos(ruta_archivo)
 
     X = sm.add_constant(data[col_x], prepend=True)
