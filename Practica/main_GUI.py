@@ -33,11 +33,8 @@ class PantallaPrincipal(tk.Frame):
         self.canvas_regresion = None
         self.rmse = None
         self.valor_x = None
-        self.etiqueta_prediccion = None
-        self.entry = None
-        self.entry_coeficiente = None
-        self.entry_constante = None
-        self.boton_actualizar_grafica = None
+        self.coeficiente_pendiente = None
+        self.constante_pendiente = None
 
         #Configuracion general de la pantalla principal
         self.configure(background="light blue")
@@ -388,12 +385,19 @@ class PantallaPrincipal(tk.Frame):
         ruta_archivo = filedialog.asksaveasfilename()
         if ruta_archivo and self.modelo is not None:
             try:
+                coeficiente_pendiente = self.modelo.params[self.col_x]
+                constante_pendiente = self.modelo.params['const']
+                prediccion_valor = prediccion(self.ruta_archivo, self.col_x, self.col_y, 5.0)  # Ejemplo de predicción con un valor arbitrario
+
                 funciones_auxiliares.guardar(
                     ruta_archivo,
                     self.col_x,
                     self.col_y,
                     self.rmse,
                     self.modelo,
+                    coeficiente_pendiente,
+                    constante_pendiente,
+                    prediccion_valor
                 )
 
                 # Llamar a la función de verificación después de guardar
@@ -408,7 +412,7 @@ class PantallaPrincipal(tk.Frame):
         print(f"Archivo seleccionado: {ruta_archivo}")  # Puedes mantener esta línea de depuración
         if ruta_archivo:
             try:
-                col_x, col_y, rmse, modelo = funciones_auxiliares.cargar(ruta_archivo)
+                col_x, col_y, rmse, modelo, coeficiente_pendiente, constante_pendiente, prediccion_valor = funciones_auxiliares.cargar(ruta_archivo)
 
                 if col_x is not None and col_y is not None and modelo is not None:
                     self.col_x = col_x
