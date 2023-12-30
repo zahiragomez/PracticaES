@@ -33,8 +33,11 @@ class PantallaPrincipal(tk.Frame):
         self.canvas_regresion = None
         self.rmse = None
         self.valor_x = None
-        self.coeficiente_pendiente = None
-        self.constante_pendiente = None
+        self.etiqueta_prediccion = None
+        self.entry = None
+        self.entry_coeficiente = None
+        self.entry_constante = None
+        self.boton_actualizar_grafica = None
 
         #Configuracion general de la pantalla principal
         self.configure(background="light blue")
@@ -167,25 +170,25 @@ class PantallaPrincipal(tk.Frame):
             )
             self.etiqueta_y.grid(row=3, column=1, padx=(10, 10), pady=10, sticky=tk.E)
 
-            # # Nueva etiqueta para mostrar el coeficiente de la pendiente
-            # self.etiqueta_coeficiente = tk.Label(
-            #     self.frame_archivo_seleccionado,
-            #     text="Coeficiente de Pendiente: ",
-            #     font=("Comfortaa", 12),
-            #     bg="light blue",
-            #     fg="black",
-            # )
-            # self.etiqueta_coeficiente.grid(row=4, column=0, columnspan=2, pady=(0, 10), padx=5, sticky=tk.W)
+            #Nueva etiqueta para mostrar el coeficiente de la pendiente
+            self.etiqueta_coeficiente = tk.Label(
+                self.frame_archivo_seleccionado,
+                text="Coeficiente de Pendiente: ",
+                font=("Comfortaa", 12),
+                bg="light blue",
+                fg="black",
+            )
+            self.etiqueta_coeficiente.grid(row=4, column=0, columnspan=2, pady=(0, 10), padx=5, sticky=tk.W)
 
-            # # Nueva etiqueta para mostrar la constante de la pendiente
-            # self.etiqueta_constante = tk.Label(
-            #     self.frame_archivo_seleccionado,
-            #     text="Constante de Pendiente: ",
-            #     font=("Comfortaa", 12),
-            #     bg="light blue",
-            #     fg="black",
-            # )
-            # self.etiqueta_constante.grid(row=4, column=0, columnspan=2, pady=(0, 10), padx=5, sticky=tk.W)
+            # Nueva etiqueta para mostrar la constante de la pendiente
+            self.etiqueta_constante = tk.Label(
+                self.frame_archivo_seleccionado,
+                text="Constante de Pendiente: ",
+                font=("Comfortaa", 12),
+                bg="light blue",
+                fg="black",
+            )
+            self.etiqueta_constante.grid(row=4, column=0, columnspan=2, pady=(0, 10), padx=5, sticky=tk.W)
 
             #Boton Crear Modelo
             self.boton_modelo = tk.Button(
@@ -332,11 +335,8 @@ class PantallaPrincipal(tk.Frame):
                 #Actualiza el atributo self.modelo con el modelo ajustado
                 self.modelo = modelo
 
-                # Almacena el coeficiente de la pendiente
-                self.coeficiente_pendiente = modelo.params[self.col_x]
-
-                # Almacena la constante de la pendiente
-                self.constante_pendiente = modelo.params['const']
+                
+                
 
                 self.boton_guardar.config(state='normal')
                 self.boton_prediccion.config(state='normal')
@@ -348,26 +348,7 @@ class PantallaPrincipal(tk.Frame):
 
                 self.rmse = calcular_rmse(modelo, self.ruta_archivo, self.col_x, self.col_y)
 
-                # Actualiza la etiqueta del coeficiente de la pendiente
-                self.etiqueta_coeficiente.config(
-                    text=f"Coeficiente de Pendiente: {self.coeficiente_pendiente:.4f}",
-                    font=("Comfortaa", 12),
-                    bg="light blue",
-                    fg="black",
-                )
-                self.etiqueta_coeficiente.grid(row=4, column=0, columnspan=2, pady=(0, 10), padx=5, sticky=tk.W)
-
-                # Forzar la actualización de la interfaz gráfica
-                self.update_idletasks()
-
-                # Actualiza la etiqueta de la constante de la pendiente
-                self.etiqueta_constante.config(
-                    text=f"Constante de Pendiente: {self.constante_pendiente:.4f}",
-                    font=("Comfortaa", 12),
-                    bg="light blue",
-                    fg="black",
-                )
-                self.etiqueta_constante.grid(row=5, column=1, columnspan=2, pady=(0, 10), padx=5, sticky=tk.W)
+                
 
                 #Etiqueta para mostrar el RMSE
                 self.etiqueta_rmse = tk.Label(
@@ -407,34 +388,27 @@ class PantallaPrincipal(tk.Frame):
         ruta_archivo = filedialog.asksaveasfilename()
         if ruta_archivo and self.modelo is not None:
             try:
-                coeficiente_pendiente = self.modelo.params[self.col_x]
-                constante_pendiente = self.modelo.params['const']
-                prediccion_valor = prediccion(self.ruta_archivo, self.col_x, self.col_y, 5.0)  # Ejemplo de predicción con un valor arbitrario
-
                 funciones_auxiliares.guardar(
                     ruta_archivo,
                     self.col_x,
                     self.col_y,
                     self.rmse,
                     self.modelo,
-                    coeficiente_pendiente,
-                    constante_pendiente,
-                    prediccion_valor
                 )
-            
+
                 # Llamar a la función de verificación después de guardar
                 funciones_auxiliares.verificar_guardado(ruta_archivo)
-            
+
             except Exception as e:
                 print(f"Error: No se pudo guardar el modelo. Detalles: {str(e)}")
 
-    #Funcion que carga un modelo desde un archivo
+    # Función que carga un modelo desde un archivo
     def cargar(self):
         ruta_archivo = filedialog.askopenfilename()
         print(f"Archivo seleccionado: {ruta_archivo}")  # Puedes mantener esta línea de depuración
         if ruta_archivo:
             try:
-                col_x, col_y, rmse, modelo, coeficiente_pendiente, constante_pendiente, prediccion_valor = funciones_auxiliares.cargar(ruta_archivo)
+                col_x, col_y, rmse, modelo = funciones_auxiliares.cargar(ruta_archivo)
 
                 if col_x is not None and col_y is not None and modelo is not None:
                     self.col_x = col_x
@@ -449,18 +423,9 @@ class PantallaPrincipal(tk.Frame):
 
                     self.realizar_analisis()
 
-                    # Si hay un valor de predicción almacenado, actualiza la interfaz
-                    if prediccion_valor is not None:
-                        # Etiqueta para mostrar la predicción
-                        self.etiqueta_prediccion.config(
-                            text=f"Predicción: {prediccion_valor}",
-                            font=("Comfortaa", 12),
-                            bg="light blue",
-                            fg="black",
-                        )
             except Exception as e:
                 print(f"Error: No se pudo cargar el modelo. Detalles: {str(e)}")
-
+                
     def prediccion(self):
         if self.ruta_archivo and self.col_x and self.col_y is not None: 
                 valor_x_str = self.entry.get()
