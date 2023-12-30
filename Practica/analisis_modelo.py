@@ -85,12 +85,12 @@ def obtener_ecuación(modelo):
     coeficientes = modelo.params
 
     # Crear la ecuación como una cadena de texto
-    ecuacion = "y = " + str(coeficientes[0])
+    ecuacion = "y = " + str(coeficientes.iloc[0])
     for i in range(1, len(coeficientes)):
-        if coeficientes[i] >= 0:
-            ecuacion += " + " + str(coeficientes[i]) + "*x"
+        if coeficientes.iloc[i] >= 0:
+            ecuacion += " + " + str(coeficientes.iloc[i]) + "*x"
         else: 
-            ecuacion += str(coeficientes[i]) + "*x"
+            ecuacion += str(coeficientes.iloc[i]) + "*x"
 
     return ecuacion
 
