@@ -167,25 +167,25 @@ class PantallaPrincipal(tk.Frame):
             )
             self.etiqueta_y.grid(row=3, column=1, padx=(10, 10), pady=10, sticky=tk.E)
 
-            # Nueva etiqueta para mostrar el coeficiente de la pendiente
-            self.etiqueta_coeficiente = tk.Label(
-                self.frame_archivo_seleccionado,
-                text="Coeficiente de Pendiente: ",
-                font=("Comfortaa", 12),
-                bg="light blue",
-                fg="black",
-            )
-            self.etiqueta_coeficiente.grid(row=4, column=0, columnspan=2, pady=(0, 10), padx=5, sticky=tk.W)
+            # # Nueva etiqueta para mostrar el coeficiente de la pendiente
+            # self.etiqueta_coeficiente = tk.Label(
+            #     self.frame_archivo_seleccionado,
+            #     text="Coeficiente de Pendiente: ",
+            #     font=("Comfortaa", 12),
+            #     bg="light blue",
+            #     fg="black",
+            # )
+            # self.etiqueta_coeficiente.grid(row=4, column=0, columnspan=2, pady=(0, 10), padx=5, sticky=tk.W)
 
-            # Nueva etiqueta para mostrar la constante de la pendiente
-            self.etiqueta_constante = tk.Label(
-                self.frame_archivo_seleccionado,
-                text="Constante de Pendiente: ",
-                font=("Comfortaa", 12),
-                bg="light blue",
-                fg="black",
-            )
-            self.etiqueta_constante.grid(row=4, column=0, columnspan=2, pady=(0, 10), padx=5, sticky=tk.W)
+            # # Nueva etiqueta para mostrar la constante de la pendiente
+            # self.etiqueta_constante = tk.Label(
+            #     self.frame_archivo_seleccionado,
+            #     text="Constante de Pendiente: ",
+            #     font=("Comfortaa", 12),
+            #     bg="light blue",
+            #     fg="black",
+            # )
+            # self.etiqueta_constante.grid(row=4, column=0, columnspan=2, pady=(0, 10), padx=5, sticky=tk.W)
 
             #Boton Crear Modelo
             self.boton_modelo = tk.Button(
@@ -265,6 +265,41 @@ class PantallaPrincipal(tk.Frame):
             )
             self.boton_prediccion.config(state='disabled')
             self.boton_prediccion.grid(row=8, column=2, pady=(0, 10), padx=5, sticky=tk.W)
+
+            # Crear un widget de entrada de texto para el coeficiente de pendiente
+            self.entry_coeficiente = tk.Entry(self.frame_archivo_seleccionado)
+            self.entry_coeficiente.grid(row=10, column=0, columnspan=2, pady=(0, 10), padx=5, sticky=tk.W)
+            tk.Label(
+                self.frame_archivo_seleccionado,
+                text="Nuevo Coeficiente de Pendiente: ",
+                font=("Comfortaa", 12),
+                bg="light blue",
+                fg="black",
+            ).grid(row=9, column=0, columnspan=2, pady=(0, 10), padx=5, sticky=tk.W)
+
+            # Crear un widget de entrada de texto para la constante de pendiente
+            self.entry_constante = tk.Entry(self.frame_archivo_seleccionado)
+            self.entry_constante.grid(row=10, column=2, columnspan=2, pady=(0, 10), padx=5, sticky=tk.W)
+            tk.Label(
+                self.frame_archivo_seleccionado,
+                text="Nueva Constante de Pendiente: ",
+                font=("Comfortaa", 12),
+                bg="light blue",
+                fg="black",
+            ).grid(row=9, column=2, columnspan=2, pady=(0, 10), padx=5, sticky=tk.W)
+
+            # Botón Actualizar Gráfica con Nuevos Coeficientes
+            self.boton_actualizar_grafica = tk.Button(
+                self.frame_archivo_seleccionado,
+                text="Actualizar Gráfica",
+                command=self.actualizar_grafica,
+                justify=tk.RIGHT,
+                font=("Comfortaa", 12),
+                bg="white",
+                fg="black",
+            )
+            self.boton_actualizar_grafica.grid(row=10, column=4, pady=(0, 10), padx=5, sticky=tk.W)
+
 
             # Crear un widget de entrada de texto
             self.etiqueta_valor_x = tk.Label(
@@ -458,6 +493,24 @@ class PantallaPrincipal(tk.Frame):
                         bg="light blue",
                         fg="black",
                     )
+
+    # Función para actualizar la gráfica con los nuevos coeficientes
+    def actualizar_grafica(self):
+        if self.modelo and self.col_x and self.col_y:
+            try:
+                # Obtener los nuevos valores de coeficiente y constante de pendiente
+                nuevo_coeficiente = float(self.entry_coeficiente.get())
+                nueva_constante = float(self.entry_constante.get())
+
+                # Actualizar los coeficientes del modelo
+                self.modelo.params[self.col_x] = nuevo_coeficiente
+                self.modelo.params['const'] = nueva_constante
+
+                # Actualizar la gráfica
+                self.canvas_regresion.delete("all")
+                actualizar_recta_regresion(self.modelo, self.ruta_archivo, self.col_x, self.col_y, self.canvas_regresion)
+            except ValueError:
+                print("Error: Ingrese valores numéricos para el coeficiente y la constante de pendiente.")                
 
 class Manager(tk.Tk):
     def __init__(self, *args, **kwargs):
