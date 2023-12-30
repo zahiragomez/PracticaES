@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog
 from seleccion_columna import ruta, cargar_datos, obtener_columnas_numericas
-from analisis_modelo import ajustar_modelo, actualizar_recta_regresion, calcular_rmse, calcular_bondad
+from analisis_modelo import ajustar_modelo, actualizar_recta_regresion, calcular_rmse, calcular_bondad, obtener_ecuación, prediccion
 import funciones_auxiliares
 from funciones_auxiliares import guardar
 from funciones_auxiliares import cargar
@@ -19,6 +19,7 @@ class PantallaPrincipal(tk.Frame):
         self.fig2 = None
         self.canvas_regresion = None
         self.rmse = None
+        self.valor_x = None
 
         #Configuracion general de la pantalla principal
         self.configure(background="light blue")
@@ -199,7 +200,52 @@ class PantallaPrincipal(tk.Frame):
             )
             self.etiqueta_r2.grid(row=6, column=0, columnspan=2, pady=(0, 10), padx=5, sticky=tk.W)
 
-    #Funcion que realiza el analisis de regresion y actualizaa la interfaz grafica
+            # Etiqueta para mostrar la ecuación
+            self.etiqueta_ecuacion = tk.Label(
+                self.frame_archivo_seleccionado,
+                text="Ecuación: ",
+                font=("Comfortaa", 12),
+                bg="light blue",
+                fg="black",
+            )
+            self.etiqueta_ecuacion.grid(row=7, column=0, columnspan=2, pady=(0, 10), padx=5, sticky=tk.W)
+
+            # Etiqueta para mostrar la prediccion
+            self.etiqueta_prediccion = tk.Label(
+                self.frame_archivo_seleccionado,
+                text=f"Predicción: ",
+                font=("Comfortaa", 12),
+                bg="light blue",
+                fg="black",
+            )
+            self.etiqueta_prediccion.grid(row=8, column=0, columnspan=2, pady=(0, 10), padx=5, sticky=tk.W)
+
+            # Botón Predicción
+            self.boton_prediccion = tk.Button(
+                self.frame_archivo_seleccionado,
+                text="Predicción",
+                command=self.prediccion,
+                justify=tk.RIGHT,
+                font=("Comfortaa", 12),
+                bg="white",
+                fg="black",
+            )
+            self.boton_prediccion.config(state='disabled')
+            self.boton_prediccion.grid(row=8, column=2, pady=(0, 10), padx=5, sticky=tk.W)
+
+            # Crear un widget de entrada de texto
+            self.etiqueta_valor_x = tk.Label(
+                self.frame_archivo_seleccionado,
+                text=f"Introduzca un valor para x: ",
+                font=("Comfortaa", 12),
+                bg="light blue",
+                fg="black",
+            )
+            self.etiqueta_valor_x.grid(row=9, column=0, columnspan=2, pady=(0, 10), padx=5, sticky=tk.W)
+            self.entry = tk.Entry(self.frame_archivo_seleccionado)
+            self.entry.grid(row=9, column=2, columnspan=2, pady=(0, 10), padx=5, sticky=tk.W)
+
+
     def realizar_analisis(self):
         if self.col_x is not None and self.col_y is not None:
             modelo = ajustar_modelo(self.ruta_archivo, self.col_x, self.col_y)
@@ -215,6 +261,7 @@ class PantallaPrincipal(tk.Frame):
                 self.modelo = modelo
 
                 self.boton_guardar.config(state='normal')
+                self.boton_prediccion.config(state='normal')
                 actualizar_recta_regresion(modelo, self.ruta_archivo, self.col_x, self.col_y, self.canvas_regresion)
 
                 self.rmse = calcular_rmse(modelo, self.ruta_archivo, self.col_x, self.col_y)
@@ -241,7 +288,18 @@ class PantallaPrincipal(tk.Frame):
                 )
                 self.etiqueta_r2.grid(row=6, column=0, columnspan=2, pady=(0, 10), padx=5, sticky=tk.W)
 
-    #Funcion que guarda el modelo en un archivo
+                self.ecuacion = obtener_ecuación(modelo)
+
+                # Etiqueta para mostrar la ecuación
+                self.etiqueta_ecuacion = tk.Label(
+                    self.frame_archivo_seleccionado,
+                    text=f"Ecuación: {self.ecuacion}",
+                    font=("Comfortaa", 12),
+                    bg="light blue",
+                    fg="black",
+                )
+                self.etiqueta_ecuacion.grid(row=7, column=0, columnspan=2, pady=(0, 10), padx=5, sticky=tk.W)
+
     def guardar(self):
         ruta_archivo = filedialog.asksaveasfilename()
         if ruta_archivo and self.modelo is not None:
@@ -270,6 +328,38 @@ class PantallaPrincipal(tk.Frame):
             else:
                 print("Error: No se pudo cargar el modelo.")
 
+    def prediccion(self):
+        if self.ruta_archivo and self.col_x and self.col_y is not None: 
+                valor_x_str = self.entry.get()
+
+                if valor_x_str.strip():  # Verificar si la cadena no está vacía después de eliminar espacios en blanco
+                    try:
+                        valor_x = float(valor_x_str)
+                        resultado_prediccion = prediccion(self.ruta_archivo, self.col_x, self.col_y, valor_x)
+
+                        # Etiqueta para mostrar la predicción
+                        self.etiqueta_prediccion.config(
+                            text=f"Predicción: {resultado_prediccion}",
+                            font=("Comfortaa", 12),
+                            bg="light blue",
+                            fg="black",
+                        )
+                    except ValueError:
+                        # Manejar el caso en el que la cadena no se puede convertir a un número
+                        self.etiqueta_prediccion.config(
+                            text="Error: Ingrese un valor numérico para x",
+                            font=("Comfortaa", 12),
+                            bg="light blue",
+                            fg="black",
+                        )
+                else:
+                    # Manejar el caso en el que la cadena está vacía
+                    self.etiqueta_prediccion.config(
+                        text="Error: El campo de entrada está vacío",
+                        font=("Comfortaa", 12),
+                        bg="light blue",
+                        fg="black",
+                    )
 
 class Manager(tk.Tk):
     def __init__(self, *args, **kwargs):

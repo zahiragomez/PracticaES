@@ -7,7 +7,7 @@ from matplotlib import style
 import  os
 from funciones_auxiliares import guardar, cargar
 from seleccion_columna import ruta, cargar_datos
-from analisis_modelo import ajustar_modelo, calcular_rmse, actualizar_recta_regresion
+from analisis_modelo import ajustar_modelo, calcular_rmse, prediccion
 
 
 # Configuración matplotlib
@@ -211,7 +211,22 @@ class TestFuncionesAuxiliares(unittest.TestCase):
 
         print("Se ha cargado el modelo con los datos del archivo correctamente.")
 
+    def test_prediccion(self):
 
+        print("Test predicción")
+        ruta_archivo = ruta()
+    
+        col_x = input("Nombre de la columna x seleccionada:")
+        col_y = input("Nombre de la columna y seleccionada:")
+
+        valor_x = float(input("Valor de x para hacer la predicción:"))
+
+        resultado = prediccion(ruta_archivo, col_x, col_y, valor_x)
+    
+        # Comprueba que el RMSE es un número flotante 
+        self.assertIsInstance(resultado, float)
+
+        print("La predicción se ha calculado de forma correcta", resultado)
 
 if __name__ == "__main__":
     unittest.main()

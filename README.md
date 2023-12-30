@@ -18,7 +18,7 @@ para poder trabajar con ellos.
 
 Primero, debes descargarte el archivo .zip y descomprimirlo en descargas.
 Para poder abrir la aplicación, debes entrar en la terminal y desplazarte a descargas, y seguidamente, a la carpeta interna llamada "Practica".
-De ahi, pones en la terminal "pyhton main_GUI.py" y se ejecutará sin problemas el generador de modelos.
+De ahi, pones en la terminal "python main_GUI.py" y se ejecutará sin problemas el generador de modelos.
 
 3. USO
 Nada mas ejecutar el archivo main_GUI.py, aparecerá por pantalla una ventana que da las siguientes opciones:
