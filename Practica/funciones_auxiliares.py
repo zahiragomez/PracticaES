@@ -3,8 +3,7 @@ import statsmodels.api as sm
 import numpy as np
 
 
-
-def guardar(ruta_archivo, col_x, col_y, rmse, modelo, coeficiente_pendiente, constante_pendiente, prediccion_valor=None):
+def guardar(ruta_archivo, col_x, col_y, rmse, modelo):
     try:
         with open(ruta_archivo, 'wb') as f:
             pickle.dump({
@@ -14,9 +13,6 @@ def guardar(ruta_archivo, col_x, col_y, rmse, modelo, coeficiente_pendiente, con
                 'modelo': {
                     'params': modelo.params.tolist() if modelo.params is not None else None,
                     'rsquared': modelo.rsquared if modelo.rsquared is not None else None,
-                    'coeficiente_pendiente': coeficiente_pendiente,
-                    'constante_pendiente': constante_pendiente,
-                    'prediccion_valor': prediccion_valor,
                 },
             }, f)
         print(f"Modelo guardado exitosamente en '{ruta_archivo}'.")
@@ -47,9 +43,6 @@ def cargar(ruta_archivo):
         # Recupera el modelo y los coeficientes
         modelo_params = modelo_data.get('params')
         modelo_rsquared = modelo_data.get('rsquared')
-        coeficiente_pendiente = modelo_data.get('coeficiente_pendiente')
-        constante_pendiente = modelo_data.get('constante_pendiente')
-        prediccion_valor = modelo_data.get('prediccion_valor')
 
         if modelo_params is None or modelo_rsquared is None:
             raise ValueError("El archivo no contiene la información necesaria del modelo.")
@@ -59,7 +52,7 @@ def cargar(ruta_archivo):
         modelo.params = np.array(modelo_params)
         modelo.rsquared = modelo_rsquared
 
-        return col_x, col_y, rmse, modelo, coeficiente_pendiente, constante_pendiente, prediccion_valor
+        return col_x, col_y, rmse, modelo
 
     except FileNotFoundError:
         print(f"Error: El archivo '{ruta_archivo}' no existe.")

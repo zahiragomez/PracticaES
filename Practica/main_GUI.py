@@ -385,19 +385,12 @@ class PantallaPrincipal(tk.Frame):
         ruta_archivo = filedialog.asksaveasfilename()
         if ruta_archivo and self.modelo is not None:
             try:
-                coeficiente_pendiente = self.modelo.params[self.col_x]
-                constante_pendiente = self.modelo.params['const']
-                prediccion_valor = prediccion(self.ruta_archivo, self.col_x, self.col_y, 5.0)  # Ejemplo de predicción con un valor arbitrario
-
                 funciones_auxiliares.guardar(
                     ruta_archivo,
                     self.col_x,
                     self.col_y,
                     self.rmse,
                     self.modelo,
-                    coeficiente_pendiente,
-                    constante_pendiente,
-                    prediccion_valor
                 )
 
                 # Llamar a la función de verificación después de guardar
@@ -406,13 +399,13 @@ class PantallaPrincipal(tk.Frame):
             except Exception as e:
                 print(f"Error: No se pudo guardar el modelo. Detalles: {str(e)}")
 
-    # Función que carga un modelo desde un archivo
+
     def cargar(self):
         ruta_archivo = filedialog.askopenfilename()
         print(f"Archivo seleccionado: {ruta_archivo}")  # Puedes mantener esta línea de depuración
         if ruta_archivo:
             try:
-                col_x, col_y, rmse, modelo, coeficiente_pendiente, constante_pendiente, prediccion_valor = funciones_auxiliares.cargar(ruta_archivo)
+                col_x, col_y, rmse, modelo = funciones_auxiliares.cargar(ruta_archivo)
 
                 if col_x is not None and col_y is not None and modelo is not None:
                     self.col_x = col_x
@@ -429,6 +422,7 @@ class PantallaPrincipal(tk.Frame):
 
             except Exception as e:
                 print(f"Error: No se pudo cargar el modelo. Detalles: {str(e)}")
+
                 
     def prediccion(self):
         if self.ruta_archivo and self.col_x and self.col_y is not None: 
