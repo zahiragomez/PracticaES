@@ -6,7 +6,7 @@ import funciones_auxiliares
 from funciones_auxiliares import guardar
 from funciones_auxiliares import cargar
 
-
+#
 class PantallaPrincipal(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
