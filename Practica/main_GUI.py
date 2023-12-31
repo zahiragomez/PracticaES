@@ -167,25 +167,25 @@ class PantallaPrincipal(tk.Frame):
             )
             self.etiqueta_y.grid(row=3, column=1, padx=(10, 10), pady=10, sticky=tk.E)
 
-            #Nueva etiqueta para mostrar el coeficiente de la pendiente
-            self.etiqueta_coeficiente = tk.Label(
-                self.frame_archivo_seleccionado,
-                text="Coeficiente de Pendiente: ",
-                font=("Comfortaa", 12),
-                bg="light blue",
-                fg="black",
-            )
-            self.etiqueta_coeficiente.grid(row=4, column=0, columnspan=2, pady=(0, 10), padx=5, sticky=tk.W)
+            # #Nueva etiqueta para mostrar el coeficiente de la pendiente
+            # self.etiqueta_coeficiente = tk.Label(
+            #     self.frame_archivo_seleccionado,
+            #     text="Coeficiente de Pendiente: ",
+            #     font=("Comfortaa", 12),
+            #     bg="light blue",
+            #     fg="black",
+            # )
+            # self.etiqueta_coeficiente.grid(row=4, column=0, columnspan=2, pady=(0, 10), padx=5, sticky=tk.W)
 
-            # Nueva etiqueta para mostrar la constante de la pendiente
-            self.etiqueta_constante = tk.Label(
-                self.frame_archivo_seleccionado,
-                text="Constante de Pendiente: ",
-                font=("Comfortaa", 12),
-                bg="light blue",
-                fg="black",
-            )
-            self.etiqueta_constante.grid(row=4, column=0, columnspan=2, pady=(0, 10), padx=5, sticky=tk.W)
+            # # Nueva etiqueta para mostrar la constante de la pendiente
+            # self.etiqueta_constante = tk.Label(
+            #     self.frame_archivo_seleccionado,
+            #     text="Constante de Pendiente: ",
+            #     font=("Comfortaa", 12),
+            #     bg="light blue",
+            #     fg="black",
+            # )
+            # self.etiqueta_constante.grid(row=4, column=0, columnspan=2, pady=(0, 10), padx=5, sticky=tk.W)
 
             #Boton Crear Modelo
             self.boton_modelo = tk.Button(
@@ -471,6 +471,19 @@ class PantallaPrincipal(tk.Frame):
                 # Actualizar la gráfica
                 self.canvas_regresion.delete("all")
                 actualizar_recta_regresion(self.modelo, self.ruta_archivo, self.col_x, self.col_y, self.canvas_regresion)
+
+                # Actualizar el RMSE
+                self.rmse = calcular_rmse(self.modelo, self.ruta_archivo, self.col_x, self.col_y)
+                self.etiqueta_rmse.config(text=f"RMSE: {self.rmse:.4f}")
+
+                # Actualizar el coeficiente de determinación (R^2)
+                self.bondad = calcular_bondad(self.modelo, self.ruta_archivo, self.col_x, self.col_y)
+                self.etiqueta_r2.config(text=f"Coeficiente de determinación (R^2): {self.bondad:.4f}")
+
+                # Actualizar la ecuación
+                self.ecuacion_actual = obtener_ecuación(self.modelo)
+                self.etiqueta_ecuacion.config(text=f"Ecuación: {self.ecuacion_actual}")
+
             except ValueError:
                 print("Error: Ingrese valores numéricos para el coeficiente y la constante de pendiente.")                
 
