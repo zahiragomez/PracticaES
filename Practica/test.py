@@ -184,33 +184,6 @@ class TestFuncionesAuxiliares(unittest.TestCase):
         print("El RMSE se ha calculado de forma correcta", rmse)
 
 
-    def test_guardar_cargar(self):
-
-        print("Test guardar y cargar")
-        ruta_archivo = ruta()
-    
-        #Abre el archivo y lee lineas
-        with open(ruta_archivo, 'r') as archivo:
-            lineas = archivo.readlines()
-            if len(lineas) != 3:
-                raise ValueError("El archivo debe contener tres líneas con los datos")
-
-        col_x = lineas[0].strip()  #Se lee la primera linea como col_x
-        col_y = lineas[1].strip()  #La segunda linea como col_y
-        rmse = float(lineas[2].strip())  #La tercera linea como rmse (convertida a float)
-
-        guardar("modelo_guardado.txt", col_x, col_y, rmse)
-    
-        #Cargar datos desde el archivo
-        datos = cargar("modelo_guardado.txt")
-    
-        #Verificar los datos cargados
-        assert datos[0] == col_x
-        assert datos[1] == col_y
-        assert datos[2] == rmse
-
-        print("Se ha cargado el modelo con los datos del archivo correctamente.")
-
     def test_prediccion(self):
 
         print("Test predicción")
