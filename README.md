@@ -1,7 +1,7 @@
 """
 
 1. DESCRIPCION 
-La aplicacion es un generador de modelos de progresiones lineales, que permite mostrar sus datos y realizar predicciones, con modelos guardados  anteriormente (en .txt) o con archivos con las extensiones .csv, .xlsx, .db.
+La aplicacion es un generador de modelos de progresiones lineales, que permite mostrar sus datos y realizar predicciones, con modelos guardados  anteriormente (en .pkl) o con archivos con las extensiones .csv, .xlsx, .db.
 
 Ademas, es posible crear modelos desde 0 a partir de la propia interfaz, cargar los que se hayan hecho anteriormente y guardar todos los posibles cambios efectuados.
 
@@ -21,19 +21,14 @@ Para poder abrir la aplicación, debes entrar en la terminal y desplazarte a des
 De ahi, pones en la terminal "python main_GUI.py" y se ejecutará sin problemas el generador de modelos.
 
 3. USO
-Nada mas ejecutar el archivo main_GUI.py, aparecerá por pantalla una ventana que da las siguientes opciones:
-- Examinar. Si pulsas aquí, te llevará a tus repositorios donde solo podras seleccionar archivos de tipo csv, excel y bases de datos 
-            para que todo funcione correctamente. Al darle a aceptar, saldrá la ruta del archivo escogido en el hueco blanco de al lado. 
-            Además, se abrirá la selección de columnas con el nombre de cada columna puesto en los archivos, mostrando debajo de cada 
-            selección la variable seleccionada. Una vez seleccionadas las columnas, unicamente tenemos la opción de "crear modelo". 
-            Seguidamente, aparecera la grafica correspondiente al modelo, su respectivo RMSE y el coeficiente de determinación. 
-            En este punto, tenemos la opcion de guardar modelo (en un .txt), cargar modelo (seleccionando un .txt) o volver a crear
-            otro modelo con la selecion de archivos y columnas. Tambien aparece una formula para la prediccion, para que cambiando la pendiente 
-            y la constante, cambie así de nuevo todo el modelo.
+Nada mas ejecutar el archivo main_GUI.py, aparecerá por pantalla una ventana con la opción de examinar, que te  llevará a la gestión de tus directorios para elegir un archivo (.csv, .xlsx, .db).
+Al escogerlo, saldrá a la izquierda una etiqueta con la ruta del archivo y debajo la selección de columnas con dos etiquetas que muestran cuáles están marcadas. Seguidamente, tienes la opción de cargar
+un modelo de un archivo .pkl hecho con la misma aplicación y mismo archivo.
 
-- Cargar. Te llevará a tus repositorios donde tendrás que seleccionar un .txt guardado con anterioridad con los parámetros del modelo. Al seleccionar
-          el archivo, te mostrará la gráfica del modelo creado, junto con el RMSE, el coeficiente de determinación, la formula de la prediccion, 
-          las opciones de cargar y guardar o volver a crear el modelo de 0.
+Al darle a crear modelo, aparecerá a la derecha de todo la gráfica del modelo. Debajo de la selección de columnas, aparecerán los datos del RMSE, el coeficiente de determinación y la ecuación de la grafica.
+Ahí se te abrirá la opción de guardar el modelo en un archivo .pkl.
+Debajo, aparece la opción para introducir un valor numérico de x, que nos dará la predicción al pulsar el botón "Predicción".
+A continuación se muestran dos recuadros para añadir la pendiente y la constante, y crear un nuevo modelo al pulsar "Actualizar Gráfica".
 
 4. ESTRUCTURA DEL PROYECTO
 Al entrar en la carpeta Practica, encontraremos dos archivos ejecutables:
