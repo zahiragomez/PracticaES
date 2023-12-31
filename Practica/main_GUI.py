@@ -81,19 +81,6 @@ class PantallaPrincipal(tk.Frame):
         )
         self.boton_examinar.grid(row=1, column=3, padx=(10, 10), pady=10, sticky=tk.W)
 
-        #Boton Cargar
-        self.boton_cargar = tk.Button(
-            self.frame_archivo_seleccionado,
-            text="Cargar",
-            command=self.cargar,
-            justify=tk.RIGHT,
-            font=("Comfortaa", 12),
-            bg="white",
-            fg="black",
-        )
-        self.boton_cargar.grid(row=1, column=4, padx=(10, 10), pady=10, sticky=tk.W)
-
-
         #Listas de seleccion de columnas (se crean vacias inicialmente)
         self.listbox_x = None
         self.listbox_y = None
@@ -179,20 +166,33 @@ class PantallaPrincipal(tk.Frame):
             )
             self.boton_modelo.grid(row=4, column=1, pady=(0, 10), padx=5, sticky=tk.E)
 
+            
+
             #Boton Guardar Modelo
             self.boton_guardar = tk.Button(
-                self.frame_archivo_seleccionado,
-                text="Guardar",
-                command=self.guardar,
-                justify=tk.RIGHT,
-                font=("Comfortaa", 12),
-                bg="white",
-                fg="black",
+            self.frame_archivo_seleccionado,
+            text="Guardar",
+            command=self.guardar,
+            justify=tk.RIGHT,
+            font=("Comfortaa", 12),
+            bg="white",
+            fg="black",
             )
             self.boton_guardar.config(state='disabled')
-            self.boton_guardar.grid(row=4, column=2, pady=(0, 10), padx=5, sticky=tk.W)
-            
-            
+            self.boton_guardar.grid(row=4, column=2, padx=(10, 10), pady=5, sticky=tk.E)
+
+            # Boton Cargar
+            self.boton_cargar = tk.Button(
+            self.frame_archivo_seleccionado,
+            text="Cargar",
+            command=self.cargar,
+            justify=tk.RIGHT,
+            font=("Comfortaa", 12),
+            bg="white",
+            fg="black",
+            )
+            self.boton_cargar.grid(row=4, column=3, padx=(10, 10), pady= 5, sticky=tk.E)
+
             #Etiqueta para mostrar el RMSE
             self.etiqueta_rmse = tk.Label(
                 self.frame_archivo_seleccionado,
@@ -247,26 +247,41 @@ class PantallaPrincipal(tk.Frame):
             self.boton_prediccion.grid(row=8, column=2, pady=(0, 10), padx=5, sticky=tk.W)
 
             # Crear un widget de entrada de texto para el coeficiente de pendiente
-            self.entry_coeficiente = tk.Entry(self.frame_archivo_seleccionado)
-            self.entry_coeficiente.grid(row=10, column=0, columnspan=2, pady=(0, 10), padx=5, sticky=tk.W)
-            tk.Label(
-                self.frame_archivo_seleccionado,
-                text="Nuevo Coeficiente de Pendiente: ",
-                font=("Comfortaa", 12),
-                bg="light blue",
-                fg="black",
-            ).grid(row=9, column=0, columnspan=2, pady=(0, 10), padx=5, sticky=tk.W)
+            self.etiqueta_valor_x = tk.Label(
+            self.frame_archivo_seleccionado,
+            text=f"Introduzca un valor para x: ",
+            font=("Comfortaa", 12),
+            bg="light blue",
+            fg="black",
+            )
+            self.etiqueta_valor_x.grid(row=9, column=0, pady=(0, 10), padx=5, sticky=tk.W)
+            self.entry = tk.Entry(self.frame_archivo_seleccionado)
+            self.entry.grid(row=9, column=1, pady=(0, 10), padx=5, sticky=tk.W)
 
-            # Crear un widget de entrada de texto para la constante de pendiente
-            self.entry_constante = tk.Entry(self.frame_archivo_seleccionado)
-            self.entry_constante.grid(row=10, column=2, columnspan=2, pady=(0, 10), padx=5, sticky=tk.W)
-            tk.Label(
+            # Etiqueta para la constante de pendiente
+            self.etiqueta_constante_pendiente = tk.Label(
                 self.frame_archivo_seleccionado,
                 text="Nueva Constante de Pendiente: ",
                 font=("Comfortaa", 12),
                 bg="light blue",
                 fg="black",
-            ).grid(row=9, column=2, columnspan=2, pady=(0, 10), padx=5, sticky=tk.W)
+                )
+            self.etiqueta_constante_pendiente.grid(row=10, column=0, pady=(0, 10), padx=5, sticky=tk.W)
+            self.entry_constante = tk.Entry(self.frame_archivo_seleccionado)
+            self.entry_constante.grid(row=10, column=1, pady=(0, 10), padx=5, sticky=tk.W)
+
+            # Etiqueta para la pendiente
+            self.etiqueta_pendiente = tk.Label(
+                    self.frame_archivo_seleccionado,
+                    text="Nuevo Coeficiente de Pendiente: ",
+                    font=("Comfortaa", 12),
+                    bg="light blue",
+                    fg="black",
+                )
+            self.etiqueta_pendiente.grid(row=11, column=0, pady=(0, 10), padx=5, sticky=tk.W)
+            self.entry_pendiente = tk.Entry(self.frame_archivo_seleccionado)
+            self.entry_pendiente.grid(row=11, column=1, pady=(0, 10), padx=5, sticky=tk.W)
+
 
             # Botón Actualizar Gráfica con Nuevos Coeficientes
             self.boton_actualizar_grafica = tk.Button(
@@ -279,19 +294,6 @@ class PantallaPrincipal(tk.Frame):
                 fg="black",
             )
             self.boton_actualizar_grafica.grid(row=10, column=4, pady=(0, 10), padx=5, sticky=tk.W)
-
-
-            # Crear un widget de entrada de texto
-            self.etiqueta_valor_x = tk.Label(
-                self.frame_archivo_seleccionado,
-                text=f"Introduzca un valor para x: ",
-                font=("Comfortaa", 12),
-                bg="light blue",
-                fg="black",
-            )
-            self.etiqueta_valor_x.grid(row=9, column=0, columnspan=2, pady=(0, 10), padx=5, sticky=tk.W)
-            self.entry = tk.Entry(self.frame_archivo_seleccionado)
-            self.entry.grid(row=9, column=2, columnspan=2, pady=(0, 10), padx=5, sticky=tk.W)
 
 
     def realizar_analisis(self):
@@ -441,7 +443,7 @@ class PantallaPrincipal(tk.Frame):
         if self.modelo and self.col_x and self.col_y:
             try:
                 # Obtener los nuevos valores de coeficiente y constante de pendiente
-                nuevo_coeficiente = float(self.entry_coeficiente.get())
+                nuevo_coeficiente = float(self.entry_pendiente.get())
                 nueva_constante = float(self.entry_constante.get())
 
                 # Actualizar los coeficientes del modelo
@@ -498,3 +500,7 @@ class Manager(tk.Tk):
 if __name__ == "__main__":
     app = Manager()
     app.mainloop()
+
+                
+             
+
